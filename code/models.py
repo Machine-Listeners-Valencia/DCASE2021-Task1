@@ -3,7 +3,7 @@ from .modules import channel_spatial_squeeze_excite
 
 from keras.models import Model
 
-def Res_Vfy_3L32_CSSE(H, W, n_channels, n_classes):
+def Res_Vfy_3L32_CSSE(H, W, n_channels, n_classes): # TODO: relative number of filters in config, as well as dropouts, maxpools
     """
     Vfy_3L32 with (d) attention module.
     """
@@ -26,15 +26,12 @@ def Res_Vfy_3L32_CSSE(H, W, n_channels, n_classes):
     x = keras.layers.ELU()(x)
 
     x = channel_spatial_squeeze_excite(x, ratio=2)
-    # x = spatial_squeeze_excite_block(x)
 
     # -------------------------------------------
     # OPTIONAL
     x = keras.layers.add([x, x1])
     # x = ELU()(x)
     # -------------------------------------------
-
-    # aux1 = GlobalAveragePooling2D()(x)
 
     # x = MaxPooling2D(pool_size=(2,10))(x)
     x = keras.layers.MaxPooling2D(pool_size=(1, 10))(x)
@@ -69,8 +66,6 @@ def Res_Vfy_3L32_CSSE(H, W, n_channels, n_classes):
     x = keras.layers.add([x, x2])
     # x = ELU()(x)
     # -------------------------------------------
-
-    # aux2 = GlobalAveragePooling2D()(x)
 
     x = keras.layers.MaxPooling2D(pool_size=(1, 5))(x)
     # x = MaxPooling2D(pool_size=(1,2))(x)
