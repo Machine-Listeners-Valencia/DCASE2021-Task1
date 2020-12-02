@@ -1,26 +1,29 @@
 import h5py
 import numpy as np
+import os
 
+def load_h5s(path_to_data):
 
-def load_h5s():
-    val_hdf5_path = '' # TODO: adding files
+    home = os.getenv('HOME')
+
+    val_hdf5_path = home + path_to_data + 'train_val_gammatone_mono_f2.h5' # TODO: use pathlib
 
     hf = h5py.File(val_hdf5_path, 'r')
 
     val_x = hf['features'][:]
     val_x = np.expand_dims(val_x, axis=-1)
 
-    val_gamma_y = hf['labels'][:]
+    val_y = hf['labels'][:]
     hf.close()
 
-    train_hdf5_path = '' # TODO: addig files
+    train_hdf5_path = home + path_to_data + 'train_val_gammatone_mono_f1.h5' # TODO: use pathlib
 
     hft = h5py.File(train_hdf5_path, 'r')
     train_x = hft['features'][:]
     train_x = np.expand_dims(train_x, axis=-1)
 
-    train_gamma_y = hft['labels'][:]
+    train_y = hft['labels'][:]
 
     hft.close()
 
-    return train_x, val_x
+    return train_x, train_y, val_x, val_y

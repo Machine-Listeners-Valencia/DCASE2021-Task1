@@ -1,11 +1,11 @@
 import keras.layers
-from .modules import channel_spatial_squeeze_excite
+from modules import channel_spatial_squeeze_excite
 
 from keras.models import Model
 
-def Res_Vfy_3L32_CSSE(H, W, n_channels, n_classes): # TODO: relative number of filters in config, as well as dropouts, maxpools
+def Res_3L32_CSSE(H, W, n_channels, n_classes): # TODO: relative number of filters in config, as well as dropouts, maxpools
     """
-    Vfy_3L32 with (d) attention module.
+    Model
     """
 
     ip = keras.layers.Input(shape=(H, W, n_channels))
