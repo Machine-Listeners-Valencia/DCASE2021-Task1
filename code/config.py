@@ -17,7 +17,22 @@ dense_layer = None
 dropouts_rate_cl = None
 
 # callbacks
+# Early Stopping
+early_stopping = True
+monitor_es = None
+min_delta_es = None
+mode_es = None
+patience_es = None
 
+# Get Learning Rate
+get_lr_after_epoch = True
+
+# Reduce LR OnPlateau
+lr_on_plateau = True
+monitor_lr_on_plateau = None
+factor_lr_on_plateau = None
+patience_lr_on_plateau = None
+min_lr_on_plateau = None
 
 # training hyperparamteres
 quick_test = True

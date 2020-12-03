@@ -6,7 +6,8 @@ from focal_loss import categorical_focal_loss
 from load_data import load_h5s
 from models import res_conv_standard_post_csse
 from utils import (check_reshape_variable, check_model_depth, check_alpha_list, check_loss_type, check_data_generator,
-                   check_training_verbose, is_boolean)
+                   check_training_verbose, is_boolean, check_callbacks)
+
 
 # check config options
 check_reshape_variable(config.reshape_method)
@@ -53,13 +54,15 @@ else:
 if config.data_augmentation == 'mixup':
     train_datagen = MixupGenerator(X, Y, batch_size=config.batch_size, alpha=config.mixup_alpha)()
 
-# TODO: callbacks
+callbacks = check_callbacks()
 
 if config.data_augmentation is not None:
     history = model.fit_generator(train_datagen,
                                   validation_data=(val_x, val_y), epochs=epochs,
                                   steps_per_epoch=np.ceil((X.shape[0] - 1) / config.batch_size),
+                                  callbacks=callbacks,
                                   verbose=tr_verbose)
 else:
     history = model.fit(X, Y, validation_data=(val_x, val_y), batch_size=config.batch_size, epochs=epochs,
+                        callbacks=callbacks,
                         verbose=tr_verbose)
