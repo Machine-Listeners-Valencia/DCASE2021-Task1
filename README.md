@@ -42,3 +42,22 @@ If use this papers, please cite them:
   institution={DCASE2020 Challenge, Tech. Rep}
 }
 ```
+
+### First modifications
+
+Due to submissions presented in the DCASE2020 edition some modifications to our model
+
+| Modification        | Frequency bins| Accuracy    (%)       |
+| :-------------: |:-------------:| :-------------:| 
+| Same model, **focal loss**    | 64| 65.56 | 
+| Removing Dense 100 units layer, flatten reshape, **focal loss**   | 64 | 63.57 | 
+| Removing Dense 100 units layer, global average reshape, **focal loss**      | 64 |66.36      |  
+| Removing Dense 100 units layer, global average reshape, no freq pooling, **focal loss**   | 64 | **67.81**      |
+| Removing Dense 100 units layer, global average reshape, no freq pooling, **focal loss**   | 128 |  67.00      | 
+
+#### Discussion
+
+- **focal loss** improves system's performance
+- no reducing the frequency bins also improves system's performance
+- adding more frequency bins does not improve system's performance if doing the same procedure
+- Flatten and Dense layers are more prone to overfitting in this scenario
