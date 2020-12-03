@@ -3,7 +3,7 @@ from modules import channel_spatial_squeeze_excite
 
 from keras.models import Model
 
-def Res_3L32_CSSE(H, W, n_channels, n_classes): # TODO: relative number of filters in config, as well as dropouts, maxpools
+def Res_3L32_CSSE(H, W, n_channels, n_classes, verbose=False): # TODO: relative number of filters in config, as well as dropouts, maxpools
     """
     Model
     """
@@ -118,6 +118,8 @@ def Res_3L32_CSSE(H, W, n_channels, n_classes): # TODO: relative number of filte
 
     model = Model(ip, x)
 
-    print(model.summary())
+    if verbose:
+
+        print(model.summary())
 
     return model
