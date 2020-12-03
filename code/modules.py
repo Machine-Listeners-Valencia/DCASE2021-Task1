@@ -1,8 +1,9 @@
 from keras.layers import (GlobalAveragePooling2D, Dense,
                           multiply, add, Permute, Conv2D,
-                          Reshape)
+                          Reshape, BatchNormalization, ELU, MaxPooling2D, Dropout)
 import keras.backend as K
 import warnings
+
 
 def _obtain_input_shape(input_shape,
                         default_size,
@@ -64,7 +65,7 @@ def _obtain_input_shape(input_shape,
                     raise ValueError('The input must have 3 channels; got '
                                      '`input_shape={input_shape}`'.format(input_shape=input_shape))
                 if ((input_shape[1] is not None and input_shape[1] < min_size) or
-                    (input_shape[2] is not None and input_shape[2] < min_size)):
+                        (input_shape[2] is not None and input_shape[2] < min_size)):
                     raise ValueError('Input size must be at least {min_size}x{min_size};'
                                      ' got `input_shape={input_shape}`'.format(min_size=min_size,
                                                                                input_shape=input_shape))
@@ -77,7 +78,7 @@ def _obtain_input_shape(input_shape,
                     raise ValueError('The input must have 3 channels; got '
                                      '`input_shape={input_shape}`'.format(input_shape=input_shape))
                 if ((input_shape[0] is not None and input_shape[0] < min_size) or
-                    (input_shape[1] is not None and input_shape[1] < min_size)):
+                        (input_shape[1] is not None and input_shape[1] < min_size)):
                     raise ValueError('Input size must be at least {min_size}x{min_size};'
                                      ' got `input_shape={input_shape}`'.format(min_size=min_size,
                                                                                input_shape=input_shape))
@@ -99,6 +100,7 @@ def _obtain_input_shape(input_shape,
 
 def _tensor_shape(tensor):
     return getattr(tensor, '_keras_shape')
+
 
 def squeeze_excite_block(input_tensor, ratio=16):
     """ Create a channel-wise squeeze-excite block
@@ -157,4 +159,52 @@ def channel_spatial_squeeze_excite(input_tensor, ratio=16):
     sse = spatial_squeeze_excite_block(input_tensor)
 
     x = add([cse, sse])
+    return x
+
+
+def conv_standard_post(inp, nfilters, ratio):
+    """
+    :param inp:
+    :param nfilters:
+    :param ratio:
+    :return:
+    """
+
+    x1 = inp
+
+    x = Conv2D(nfilters, 3, padding='same')(inp)
+    x = BatchNormalization()(x)
+    x = ELU()(x)
+
+    x = Conv2D(nfilters, 3, padding='same')(x)
+    x = BatchNormalization()(x)
+
+    x1 = Conv2D(nfilters, 1, padding='same')(x1)
+    x1 = BatchNormalization()(x1)
+
+    x = add([x, x1])
+    x = ELU()(x)
+
+    x = channel_spatial_squeeze_excite(x, ratio=ratio)
+
+    x = add([x, x1])
+
+    return x
+
+
+def network_module(inp, nfilters, ratio, pool_size, dropout_rate):
+    """
+
+    :param inp:
+    :param nfilters:
+    :param ratio:
+    :param pool_size:
+    :param dropout_rate:
+    :return:
+    """
+    x = conv_standard_post(inp, nfilters, ratio)
+
+    x = MaxPooling2D(pool_size=pool_size)(x)
+    x = Dropout(dropout_rate)(x)
+
     return x
