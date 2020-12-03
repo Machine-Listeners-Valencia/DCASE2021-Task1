@@ -28,3 +28,4 @@ data_augmentation = 'mixup'
 epochs = 500
 mixup_alpha = 0.4
 batch_size = 32
+training_verbose = None

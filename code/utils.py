@@ -26,3 +26,29 @@ def check_loss_type(loss_type):
     if loss_type not in possible_options:
         raise Exception('Defined loss type not available. Please check config file. '
                         'Possible options are: {}'.format(possible_options))
+
+
+def check_data_generator(data_augmentation):
+    possible_options = ['mixup', None]
+
+    if data_augmentation not in possible_options:
+        raise Exception('Defined data generator not available. Please check config file. '
+                        'Possible options are: {}'.format(possible_options))
+
+
+def check_training_verbose(training_verbose):
+    possible_options = [0, 1, 2, None]
+
+    if training_verbose not in possible_options:
+        raise Exception('Defined training verbose not available. Please check config file. '
+                        'Possible options are: {}'.format(possible_options))
+
+    if training_verbose is None:
+        return 1
+    else:
+        return training_verbose
+
+
+def is_boolean(inp):
+    if isinstance(inp, bool) is not True:
+        raise Exception('Variable {} is not a boolean variable, please check in config file'.format(inp))
