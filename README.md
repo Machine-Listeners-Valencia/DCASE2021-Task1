@@ -45,7 +45,8 @@ If use this papers, please cite them:
 
 ### First modifications
 
-Due to submissions presented in the DCASE2020 edition some modifications to our model
+Due to submissions presented in the DCASE2020 edition some modifications to our model.
+Training proceudre (callbacks, epochs and mixup remain the same)
 
 | Modification        | Frequency bins| Accuracy    (%)       |
 | :-------------: |:-------------:| :-------------:| 
