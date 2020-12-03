@@ -163,11 +163,11 @@ def channel_spatial_squeeze_excite(input_tensor, ratio=16):
 
 
 def conv_standard_post(inp, nfilters, ratio):
-    """
-    :param inp:
-    :param nfilters:
-    :param ratio:
-    :return:
+    """ Module presented in https://ieeexplore.ieee.org/abstract/document/9118879
+    :param inp: input tensor
+    :param nfilters: number of filter of convolutional layers
+    :param ratio: parameter for squeeze-excitation module
+    :return: tensor
     """
 
     x1 = inp
@@ -193,13 +193,12 @@ def conv_standard_post(inp, nfilters, ratio):
 
 
 def network_module(inp, nfilters, ratio, pool_size, dropout_rate):
-    """
-
-    :param inp:
-    :param nfilters:
-    :param ratio:
-    :param pool_size:
-    :param dropout_rate:
+    """ Implementation presented in https://ieeexplore.ieee.org/abstract/document/9118879
+    :param inp: input tensor
+    :param nfilters: number of filter of convolutional layers
+    :param ratio: parameter for squeeze-excitation module
+    :param pool_size: size of the pool
+    :param dropout_rate: rate for dropout
     :return:
     """
     x = conv_standard_post(inp, nfilters, ratio)
