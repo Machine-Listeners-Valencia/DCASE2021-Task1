@@ -1,17 +1,22 @@
 import threading
 import numpy as np
 
+
 def threadsafe_generator(f):
     """A decorator that takes a generator function and makes it thread-safe.
     """
+
     def g(*a, **kw):
         return threadsafe_iter(f(*a, **kw))
+
     return g
+
 
 class threadsafe_iter:
     """Takes an iterator/generator and makes it thread-safe by
     serializing call to the `next` method of given iterator/generator.
     """
+
     def __init__(self, it):
         self.it = it
         self.lock = threading.Lock()
