@@ -4,14 +4,14 @@ from modules import channel_spatial_squeeze_excite, network_module
 from keras.models import Model
 
 
-def res_conv_standard_post_csse(H, W, n_channels, n_classes,
+def res_conv_standard_post_csse(h, w, n_channels, n_classes,
                                 nfilters, pools_size, dropouts_rate, ratio, reshape_type, dense_layer,
                                 verbose=False):
     """
     Model
     """
 
-    ip = keras.layers.Input(shape=(H, W, n_channels))
+    ip = keras.layers.Input(shape=(h, w, n_channels))
 
     for i in range(0, len(nfilters)):
 
