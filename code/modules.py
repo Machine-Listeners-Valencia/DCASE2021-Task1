@@ -207,3 +207,18 @@ def network_module(inp, nfilters, ratio, pool_size, dropout_rate):
     x = Dropout(dropout_rate)(x)
 
     return x
+
+
+def freq_split(inp, n_split_freqs, f_split_freqs):
+    if n_split_freqs == 2:
+        x1 = inp[:, 0:f_split_freqs[0], :, :]
+        x2 = inp[:, f_split_freqs[0]:, :, :]
+
+        return [x1, x2]
+
+    if n_split_freqs == 3:
+        x1 = inp[:, 0:f_split_freqs[0], :, :]
+        x2 = inp[:, f_split_freqs[0]:f_split_freqs[1], :, :]
+        x3 = inp[:, f_split_freqs[1]:, :, :]
+
+        return [x1, x2, x3]

@@ -1,6 +1,7 @@
 import config
 from callbacks import lr_on_plateau, early_stopping, GetLRAfterEpoch
-
+import os
+import keras
 
 def check_reshape_variable(reshape_method):
     possible_options = ['global_avg', 'global_max', 'flatten']
@@ -60,7 +61,8 @@ def is_boolean(inp):
 
 def check_callbacks():
 
-    if config.early_stopping is not True and config.get_lr_after_epoch is not True and config.factor_lr_on_plateau is not True:
+    if (config.early_stopping is not True and config.get_lr_after_epoch is not True
+            and config.factor_lr_on_plateau and config.save_outputs is not True):
         return None
     else:
         if config.early_stopping is True:
@@ -90,7 +92,25 @@ def check_callbacks():
         else:
             lr_onplt = []
 
-    callbacks = [es, get_lr, lr_onplt]
+        if config.save_outputs is True:
+            home_path = os.getenv('HOME')
+            save_best = keras.callbacks.ModelCheckpoint(home_path + config.best_model_path, save_best_only=True,
+                                                        monitor='val_categorical_accuracy')
+            save = keras.callbacks.ModelCheckpoint(home_path + config.last_model_path)
+            csv_log = keras.callbacks.CSVLogger(home_path + config.log_path)
+
+        else:
+            save_best = []
+            save = []
+            csv_log = []
+
+    callbacks = [es, get_lr, lr_onplt, save_best, save, csv_log]
     callbacks = list(filter(None, callbacks))
 
     return callbacks
+
+
+def check_split_freqs(split_freqs, n_split_freqs, f_split_freqs):
+    if split_freqs is True:
+        if n_split_freqs - len(f_split_freqs) != 1:
+            raise Exception('Number of split frequencies and frequencies cutoff do not match.')

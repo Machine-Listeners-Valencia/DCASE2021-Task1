@@ -4,10 +4,9 @@ import config
 from data_augmentation import MixupGenerator
 from focal_loss import categorical_focal_loss
 from load_data import load_h5s
-from models import res_conv_standard_post_csse
+from models import res_conv_standard_post_csse, res_conv_standard_post_csse_split_freqs
 from tests import (check_reshape_variable, check_model_depth, check_alpha_list, check_loss_type, check_data_generator,
                    check_training_verbose, is_boolean, check_callbacks)
-
 
 # check config options
 check_reshape_variable(config.reshape_method)
@@ -24,10 +23,19 @@ print('Training shape: {}'.format(X.shape))
 print('Validation shape: {}'.format(val_x.shape))
 
 # creating model
-model = res_conv_standard_post_csse(X.shape[1], X.shape[2], X.shape[3], Y.shape[1],
-                                    config.n_filters, config.pools_size, config.dropouts_rate, config.ratio,
-                                    config.reshape_method, config.dense_layer,
-                                    verbose=True)
+
+if config.split_freqs is not True:
+    model = res_conv_standard_post_csse(X.shape[1], X.shape[2], X.shape[3], Y.shape[1],
+                                        config.n_filters, config.pools_size, config.dropouts_rate, config.ratio,
+                                        config.reshape_method, config.dense_layer,
+                                        verbose=config.verbose)
+
+else:
+    model = res_conv_standard_post_csse_split_freqs(X.shape[1], X.shape[2], X.shape[3], Y.shape[1],
+                                                    config.n_filters, config.pools_size, config.dropouts_rate,
+                                                    config.ratio,
+                                                    config.reshape_method, config.dense_layer,
+                                                    config.n_split_freqs, config.f_split_freqs, verbose=config.verbose)
 
 # checking focal loss if necessary
 if config.loss_type == 'focal_loss':
