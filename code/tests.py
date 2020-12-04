@@ -2,6 +2,7 @@ import config
 from callbacks import lr_on_plateau, early_stopping, GetLRAfterEpoch
 import os
 import keras
+from utils import create_folder_time, moving_config_file_to_folder
 
 def check_reshape_variable(reshape_method):
     possible_options = ['global_avg', 'global_max', 'flatten']
@@ -93,11 +94,13 @@ def check_callbacks():
             lr_onplt = []
 
         if config.save_outputs is True:
-            home_path = os.getenv('HOME')
-            save_best = keras.callbacks.ModelCheckpoint(home_path + config.best_model_path, save_best_only=True,
+
+            folder_path = create_folder_time()
+            moving_config_file_to_folder(folder_path)
+            save_best = keras.callbacks.ModelCheckpoint(folder_path + config.best_model_name, save_best_only=True,
                                                         monitor='val_categorical_accuracy')
-            save = keras.callbacks.ModelCheckpoint(home_path + config.last_model_path)
-            csv_log = keras.callbacks.CSVLogger(home_path + config.log_path)
+            save = keras.callbacks.ModelCheckpoint(folder_path + config.last_model_name)
+            csv_log = keras.callbacks.CSVLogger(folder_path + config.log_name)
 
         else:
             save_best = []

@@ -1,5 +1,6 @@
 # data paths
-path = '/repos/DCASE2021-Task1/data/gammatone_256/'
+data_path = '/repos/DCASE2021-Task1/data/gammatone_64/'
+code_path = '/repos/DCASE2021-Task1/code/'
 
 # audio representation hyperparameters
 freq_bands = 64
@@ -16,7 +17,7 @@ reshape_method = 'global_avg'
 dense_layer = None
 dropouts_rate_cl = None
 
-split_freqs = True
+split_freqs = False
 n_split_freqs = 3
 f_split_freqs = [64, 128]
 
@@ -40,9 +41,10 @@ min_lr_on_plateau = None
 
 # Save models and csvs
 save_outputs = True
-best_model_path = '/repos/DCASE2021-Task1/outputs/best.h5'
-last_model_path = '/repos/DCASE2021-Task1/outputs/last.h5'
-log_path = '/repos/DCASE2021-Task1/outputs/log.csv'
+outputs_path = '/repos/DCASE2021-Task1/outputs/'
+best_model_name = 'best.h5'
+last_model_name = 'last.h5'
+log_name = 'log.csv'
 
 # training hyperparamteres
 quick_test = True

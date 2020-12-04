@@ -17,7 +17,7 @@ tr_verbose = check_training_verbose(config.training_verbose)
 is_boolean(config.quick_test)
 
 # loading training data
-X, Y, val_x, val_y = load_h5s(config.path)
+X, Y, val_x, val_y = load_h5s(config.data_path)
 
 print('Training shape: {}'.format(X.shape))
 print('Validation shape: {}'.format(val_x.shape))
