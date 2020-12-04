@@ -18,7 +18,7 @@ http://dcase.community/documents/challenge2020/technical_reports/DCASE2020_Naran
 The best system obtained **65.1%** accuracy being **54.1%** the baseline in development
 stage
 
-In evaluation stage, the system performed **61.9%** accuracy being **51.4** the baseline.
+In evaluation stage, the system performed **61.9%** accuracy being **51.4%** the baseline.
 
 If use this papers, please cite them:
 
@@ -62,3 +62,9 @@ Training proceudre (callbacks, epochs and mixup remain the same)
 - no reducing the frequency bins also improves system's performance
 - adding more frequency bins does not improve system's performance if doing the same procedure
 - Flatten and Dense layers are more prone to overfitting in this scenario
+
+## Run Code
+
+- This repo assumes that it has been saved as a subdirectory of HOME
+
+- You only have to configure the `config.py` file as desired to launch trainings
