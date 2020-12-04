@@ -51,7 +51,8 @@ def res_conv_standard_post_csse_split_freqs(h, w, n_channels, n_classes,
 
     if n_split_freqs == 2:
 
-        splits = keras.layers.Lambda(freq_split)(ip, n_split_freqs, f_split_freqs)
+        splits = keras.layers.Lambda(freq_split, arguments={'n_split_freqs': n_split_freqs,
+                                                            'f_split_freqs': f_split_freqs})(ip)
 
         x1 = splits[0]
         x2 = splits[1]
@@ -86,12 +87,13 @@ def res_conv_standard_post_csse_split_freqs(h, w, n_channels, n_classes,
 
     elif n_split_freqs == 3:
 
-        splits = keras.layers.Lambda(freq_split, arguments={'n_split_freqs': n_split_freqs, 'f_split_freqs': f_split_freqs})(ip)
+        splits = keras.layers.Lambda(freq_split, arguments={'n_split_freqs': n_split_freqs,
+                                                            'f_split_freqs': f_split_freqs})(ip)
 
         x1 = splits[0]
         x2 = splits[1]
         x3 = splits[2]
-        
+
         for i in range(0, len(nfilters)):
             x1 = network_module(x1, nfilters[i], ratio, pools_size[i], dropouts_rate[i])
             x2 = network_module(x2, nfilters[i], ratio, pools_size[i], dropouts_rate[i])
