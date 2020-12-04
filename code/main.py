@@ -5,7 +5,7 @@ from data_augmentation import MixupGenerator
 from focal_loss import categorical_focal_loss
 from load_data import load_h5s
 from models import res_conv_standard_post_csse
-from utils import (check_reshape_variable, check_model_depth, check_alpha_list, check_loss_type, check_data_generator,
+from tests import (check_reshape_variable, check_model_depth, check_alpha_list, check_loss_type, check_data_generator,
                    check_training_verbose, is_boolean, check_callbacks)
 
 

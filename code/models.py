@@ -1,5 +1,5 @@
 import keras.layers
-from modules import channel_spatial_squeeze_excite, network_module
+from modules import network_module
 
 from keras.models import Model
 
@@ -42,3 +42,5 @@ def res_conv_standard_post_csse(h, w, n_channels, n_classes,
         print(model.summary())
 
     return model
+
+#TODO trident model

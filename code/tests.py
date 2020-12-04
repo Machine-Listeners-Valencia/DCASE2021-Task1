@@ -59,30 +59,15 @@ def is_boolean(inp):
 
 
 def check_callbacks():
-    # TODO: optimize if else
+
     if config.early_stopping is not True and config.get_lr_after_epoch is not True and config.factor_lr_on_plateau is not True:
         return None
     else:
         if config.early_stopping is True:
-            if config.monitor_es is None:
-                monitor_es = 'val_categorical_accuracy'
-            else:
-                monitor_es = config.monitor_es
-
-            if config.min_delta_es is None:
-                min_delta_es = 0.00001
-            else:
-                min_delta_es = config.min_delta_es
-
-            if config.mode_es is None:
-                mode_es = 'auto'
-            else:
-                mode_es = config.mode_es
-
-            if config.patience_es is None:
-                patience_es = 50
-            else:
-                patience_es = config.patience_es
+            monitor_es = 'val_categorical_accuracy' if config.monitor_es is None else config.monitor_es
+            min_delta_es = 0.00001 if config.min_delta_es is None else config.min_delta_es
+            mode_es = 'auto' if config.mode_es is None else config.mode_es
+            patience_es = 50 if config.patience_es is None else config.patience_es
 
             es = early_stopping(monitor_es, min_delta_es, mode_es, patience_es)
 
@@ -95,25 +80,10 @@ def check_callbacks():
             get_lr = []
 
         if config.lr_on_plateau is True:
-            if config.monitor_lr_on_plateau is None:
-                monitor_lr = 'val_categorical_accuracy'
-            else:
-                monitor_lr = config.monitor_lr_on_plateau
-
-            if config.factor_lr_on_plateau is None:
-                factor_lr = 0.5
-            else:
-                factor_lr = config.factor_lr_on_plateau
-
-            if config.patience_lr_on_plateau is None:
-                patience_lr = 20
-            else:
-                patience_lr = config.patience_lr_on_plateau
-
-            if config.min_lr_on_plateau is None:
-                min_lr = 0.000001
-            else:
-                min_lr = config.min_lr_on_plateau
+            monitor_lr = 'val_categorical_accuracy' if config.monitor_lr_on_plateau is None else config.monitor_lr_on_plateau
+            factor_lr = 0.5 if config.factor_lr_on_plateau is None else config.factor_lr_on_plateau
+            patience_lr = 20 if config.patience_lr_on_plateau is None else config.patience_lr_on_plateau
+            min_lr = 0.000001 if config.min_lr_on_plateau is None else config.min_lr_on_plateau
 
             lr_onplt = lr_on_plateau(monitor_lr, factor_lr, patience_lr, min_lr)
 
