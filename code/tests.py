@@ -4,6 +4,7 @@ import os
 import keras
 from utils import create_folder_time, moving_config_file_to_folder
 
+
 def check_reshape_variable(reshape_method):
     possible_options = ['global_avg', 'global_max', 'flatten']
 
@@ -61,7 +62,6 @@ def is_boolean(inp):
 
 
 def check_callbacks():
-
     if (config.early_stopping is not True and config.get_lr_after_epoch is not True
             and config.factor_lr_on_plateau and config.save_outputs is not True):
         return None
