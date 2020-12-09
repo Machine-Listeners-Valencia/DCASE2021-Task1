@@ -162,22 +162,34 @@ def channel_spatial_squeeze_excite(input_tensor, ratio=16):
     return x
 
 
-def conv_standard_post(inp, nfilters, ratio):
+def conv_standard_post(inp, nfilters, ratio, pre_act = False):
     """ Module presented in https://ieeexplore.ieee.org/abstract/document/9118879
     :param inp: input tensor
     :param nfilters: number of filter of convolutional layers
     :param ratio: parameter for squeeze-excitation module
+    :param pre_act:
     :return: tensor
     """
 
     x1 = inp
 
-    x = Conv2D(nfilters, 3, padding='same')(inp)
-    x = BatchNormalization()(x)
-    x = ELU()(x)
+    if pre_act:
 
-    x = Conv2D(nfilters, 3, padding='same')(x)
-    x = BatchNormalization()(x)
+        x = BatchNormalization()(inp)
+        x = ELU()(x)
+        x = Conv2D(nfilters, 3, padding='same')(x)
+
+        x = BatchNormalization()(x)
+        x = Conv2D(nfilters, 3, padding='same')(x)
+
+    else:
+
+        x = Conv2D(nfilters, 3, padding='same')(inp)
+        x = BatchNormalization()(x)
+        x = ELU()(x)
+
+        x = Conv2D(nfilters, 3, padding='same')(x)
+        x = BatchNormalization()(x)
 
     x1 = Conv2D(nfilters, 1, padding='same')(x1)
     x1 = BatchNormalization()(x1)
@@ -192,16 +204,17 @@ def conv_standard_post(inp, nfilters, ratio):
     return x
 
 
-def network_module(inp, nfilters, ratio, pool_size, dropout_rate):
+def network_module(inp, nfilters, ratio, pool_size, dropout_rate, pre_act=False):
     """ Implementation presented in https://ieeexplore.ieee.org/abstract/document/9118879
     :param inp: input tensor
     :param nfilters: number of filter of convolutional layers
     :param ratio: parameter for squeeze-excitation module
     :param pool_size: size of the pool
     :param dropout_rate: rate for dropout
+    :param pre_act: pre_activation flag
     :return:
     """
-    x = conv_standard_post(inp, nfilters, ratio)
+    x = conv_standard_post(inp, nfilters, ratio, pre_act=pre_act)
 
     x = MaxPooling2D(pool_size=pool_size)(x)
     x = Dropout(dropout_rate)(x)

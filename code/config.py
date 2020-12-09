@@ -12,6 +12,7 @@ pools_size = [(1, 10), (1, 5), (1, 5)]
 dropouts_rate = [0.3, 0.3, 0.3]
 
 ratio = 2
+pre_act = False
 
 reshape_method = 'global_avg'  # ['global_avg', 'global_max', 'flatten']
 dense_layer = None

@@ -28,14 +28,15 @@ if config.split_freqs is not True:
     model = res_conv_standard_post_csse(X.shape[1], X.shape[2], X.shape[3], Y.shape[1],
                                         config.n_filters, config.pools_size, config.dropouts_rate, config.ratio,
                                         config.reshape_method, config.dense_layer,
-                                        verbose=config.verbose)
+                                        pre_act=config.pre_act, verbose=config.verbose)
 
 else:
     model = res_conv_standard_post_csse_split_freqs(X.shape[1], X.shape[2], X.shape[3], Y.shape[1],
                                                     config.n_filters, config.pools_size, config.dropouts_rate,
                                                     config.ratio,
                                                     config.reshape_method, config.dense_layer,
-                                                    config.n_split_freqs, config.f_split_freqs, verbose=config.verbose)
+                                                    config.n_split_freqs, config.f_split_freqs,
+                                                    pre_act=config.pre_act, verbose=config.verbose)
 
 # checking focal loss if necessary
 if config.loss_type == 'focal_loss':
