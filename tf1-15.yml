@@ -110,4 +110,4 @@ dependencies:
   - zipp=3.4.0=py_0
   - zlib=1.2.11=h7b6447c_3
   - zstd=1.4.5=h6597ccf_2
-prefix: /home/javi/anaconda3/envs/tf1-15
+prefix: /pathto/anaconda/anaconda3/envs/tf1-15 # change prefix path
