@@ -13,6 +13,7 @@ dropouts_rate: list = [0.3, 0.3, 0.3]
 
 ratio: int = 2
 pre_act: bool = False
+shortcut: str = 'conv'
 
 reshape_method: str = 'global_avg'  # ['global_avg', 'global_max', 'flatten']
 dense_layer = None

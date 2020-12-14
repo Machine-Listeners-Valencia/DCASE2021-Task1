@@ -1,8 +1,9 @@
-from keras.layers import (GlobalAveragePooling2D, Dense,
+from keras.layers import (GlobalAveragePooling2D, GlobalMaxPooling2D, Dense,
                           multiply, add, Permute, Conv2D,
-                          Reshape, BatchNormalization, ELU, MaxPooling2D, Dropout)
+                          Reshape, BatchNormalization, ELU, MaxPooling2D, Dropout, Lambda)
 import keras.backend as K
 import warnings
+import numpy as np
 
 
 def _obtain_input_shape(input_shape,
@@ -162,12 +163,13 @@ def channel_spatial_squeeze_excite(input_tensor, ratio=16):
     return x
 
 
-def conv_standard_post(inp, nfilters, ratio, pre_act = False):
+def conv_standard_post(inp, nfilters, ratio, pre_act=False, shortcut='conv'):
     """ Module presented in https://ieeexplore.ieee.org/abstract/document/9118879
     :param inp: input tensor
     :param nfilters: number of filter of convolutional layers
     :param ratio: parameter for squeeze-excitation module
     :param pre_act:
+    :param shortcut:
     :return: tensor
     """
 
@@ -191,20 +193,29 @@ def conv_standard_post(inp, nfilters, ratio, pre_act = False):
         x = Conv2D(nfilters, 3, padding='same')(x)
         x = BatchNormalization()(x)
 
-    x1 = Conv2D(nfilters, 1, padding='same')(x1)
-    x1 = BatchNormalization()(x1)
+    if shortcut == 'conv':
+        x1 = Conv2D(nfilters, 1, padding='same')(x1)
+        x1 = BatchNormalization()(x1)
+    else:
+        x1 = Lambda(pad_matrix_global, arguments={'type': shortcut})(x1)
 
-    x = add([x, x1])
+    if K.int_shape(x)[3] != K.int_shape(x1)[3]:
+        x = add([x, Lambda(lambda y: K.repeat_elements(y, rep=int(K.int_shape(x)[3]//K.int_shape(x1)[3]), axis=3))(x1)])
+    else:
+        x = add([x, x1])
     x = ELU()(x)
 
     x = channel_spatial_squeeze_excite(x, ratio=ratio)
 
-    x = add([x, x1])
+    if K.int_shape(x)[3] != K.int_shape(x1)[3]:
+        x = add([x, Lambda(lambda y: K.repeat_elements(y, rep=int(K.int_shape(x)[3]//K.int_shape(x1)[3]), axis=3))(x1)])
+    else:
+        x = add([x, x1])
 
     return x
 
 
-def network_module(inp, nfilters, ratio, pool_size, dropout_rate, pre_act=False):
+def network_module(inp, nfilters, ratio, pool_size, dropout_rate, pre_act=False, shortcut='conv'):
     """ Implementation presented in https://ieeexplore.ieee.org/abstract/document/9118879
     :param inp: input tensor
     :param nfilters: number of filter of convolutional layers
@@ -212,14 +223,32 @@ def network_module(inp, nfilters, ratio, pool_size, dropout_rate, pre_act=False)
     :param pool_size: size of the pool
     :param dropout_rate: rate for dropout
     :param pre_act: pre_activation flag
+    :param shortcut:
     :return:
     """
-    x = conv_standard_post(inp, nfilters, ratio, pre_act=pre_act)
+    x = conv_standard_post(inp, nfilters, ratio, pre_act=pre_act, shortcut=shortcut)
 
     x = MaxPooling2D(pool_size=pool_size)(x)
     x = Dropout(dropout_rate)(x)
 
     return x
+
+
+def pad_matrix_global(inp, type='global_avg'):
+
+    h = K.int_shape(inp)[1]
+    w = K.int_shape(inp)[2]
+
+    if type == 'global_avg':
+        x1 = GlobalAveragePooling2D()(inp)
+    elif type == 'global_max':
+        x1 = GlobalMaxPooling2D()(inp)
+
+    x1_rep = K.repeat(x1, h * w)
+    x1_rep = Reshape((K.int_shape(x1)[1], h, w))(x1_rep)
+    x1_rep = K.permute_dimensions(x1_rep, (0, 2, 3, 1))
+
+    return x1_rep
 
 
 def freq_split(inp, n_split_freqs, f_split_freqs):
