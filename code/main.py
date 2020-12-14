@@ -1,5 +1,19 @@
+"""
+Description: main file to execute submission system. Please README.md for further instructions and check packages
+            versions as defined in [requirements.txt] and [tf1-15.yml].
+            Execution configuration is defined using [config.py].
+
+License: MIT License
+"""
+
+# Futures
+
+# Generic/Built-in[
+
+# Other Libs
 import numpy as np
 
+# Owned
 import config
 from data_augmentation import MixupGenerator
 from focal_loss import categorical_focal_loss
@@ -7,6 +21,17 @@ from load_data import load_h5s
 from models import res_conv_standard_post_csse, res_conv_standard_post_csse_split_freqs
 from tests import (check_reshape_variable, check_model_depth, check_alpha_list, check_loss_type, check_data_generator,
                    check_training_verbose, is_boolean, check_callbacks)
+
+__author__ = "Javier Naranjo, Sergi Perez and Irene Martín"
+__copyright__ = "Machine Listeners Valencia"
+__credits__ = ["Machine Listeners Valencia"]
+__license__ = "MIT License"
+__version__ = "0.1.0"
+__maintainer__ = "Javier Naranjo"
+__email__ = "janal2@alumni.uv.es"
+__status__ = "Dev"
+
+# {code}
 
 # check config options
 check_reshape_variable(config.reshape_method)
