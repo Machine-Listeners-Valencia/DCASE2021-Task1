@@ -8,7 +8,7 @@ License: MIT License
 
 # Futures
 
-# Generic/Built-in[
+# Generic/Built-in
 
 # Other Libs
 import numpy as np
