@@ -3,7 +3,6 @@ from keras.layers import (GlobalAveragePooling2D, GlobalMaxPooling2D, Dense,
                           Reshape, BatchNormalization, ELU, MaxPooling2D, Dropout, Lambda)
 import keras.backend as K
 import warnings
-import numpy as np
 
 
 def _obtain_input_shape(input_shape,
@@ -202,22 +201,13 @@ def conv_standard_post(inp, nfilters, ratio, index, pre_act=False, shortcut='con
     else:
         x1 = Lambda(pad_matrix_global, arguments={'type': shortcut}, name='lambda_padding_' + str(index))(x1)
 
-    if K.int_shape(x)[3] != K.int_shape(x1)[3]:
-        x = add(
-            [x, Lambda(lambda y: K.repeat_elements(y, rep=int(K.int_shape(x)[3] // K.int_shape(x1)[3]), axis=3),
-                       name='lambda_add_' + str(index) + '_a')(x1)])
-    else:
-        x = add([x, x1])
+    x = module_addition(x, x1, index, 'a')
+
     x = ELU(name=elu_name + '_after_addition')(x)
 
     x = channel_spatial_squeeze_excite(x, ratio=ratio)
 
-    if K.int_shape(x)[3] != K.int_shape(x1)[3]:
-        x = add(
-            [x, Lambda(lambda y: K.repeat_elements(y, rep=int(K.int_shape(x)[3] // K.int_shape(x1)[3]), axis=3),
-                       name='lambda_add_' + str(index) + '_b')(x1)])
-    else:
-        x = add([x, x1])
+    x = module_addition(x, x1, index, 'b')
 
     return x
 
@@ -242,7 +232,32 @@ def network_module(inp, nfilters, ratio, pool_size, dropout_rate, index, pre_act
     return x
 
 
+def module_addition(inp1, inp2, index, suffix):
+    """
+
+    :param inp1:
+    :param inp2:
+    :param index:
+    :param suffix:
+    :return:
+    """
+    if K.int_shape(inp1)[3] != K.int_shape(inp2)[3]:
+        x = add(
+            [inp1, Lambda(lambda y: K.repeat_elements(y, rep=int(K.int_shape(inp1)[3] // K.int_shape(inp2)[3]), axis=3),
+                          name='lambda_add_' + str(index) + '_' + str(suffix))(inp2)])
+    else:
+        x = add([inp1, inp2])
+
+    return x
+
+
 def pad_matrix_global(inp, type='global_avg'):
+    """
+
+    :param inp:
+    :param type:
+    :return:
+    """
     h = K.int_shape(inp)[1]
     w = K.int_shape(inp)[2]
 
@@ -259,6 +274,13 @@ def pad_matrix_global(inp, type='global_avg'):
 
 
 def freq_split(inp, n_split_freqs, f_split_freqs):
+    """
+
+    :param inp:
+    :param n_split_freqs:
+    :param f_split_freqs:
+    :return:
+    """
     if n_split_freqs == 2:
         x1 = inp[:, 0:f_split_freqs[0], :, :]
         x2 = inp[:, f_split_freqs[0]:, :, :]
