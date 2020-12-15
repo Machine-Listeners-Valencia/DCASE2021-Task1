@@ -3,7 +3,7 @@ data_path: str = '/repos/DCASE2021-Task1/data/gammatone_64/'
 code_path: str = '/repos/DCASE2021-Task1/code/'
 
 # audio representation hyperparameters
-#freq_bands = 64
+# freq_bands = 64
 
 # model parameters
 verbose: bool = True  # [True, False]
@@ -13,7 +13,7 @@ dropouts_rate: list = [0.3, 0.3, 0.3]
 
 ratio: int = 2
 pre_act: bool = False
-shortcut: str = 'conv'
+shortcut: str = 'global_avg'  # ['conv', 'global_avg', 'global_max']
 
 reshape_method: str = 'global_avg'  # ['global_avg', 'global_max', 'flatten']
 dense_layer = None

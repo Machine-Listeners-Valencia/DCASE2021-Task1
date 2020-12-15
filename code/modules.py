@@ -163,7 +163,7 @@ def channel_spatial_squeeze_excite(input_tensor, ratio=16):
     return x
 
 
-def conv_standard_post(inp, nfilters, ratio, pre_act=False, shortcut='conv'):
+def conv_standard_post(inp, nfilters, ratio, index, pre_act=False, shortcut='conv'):
     """ Module presented in https://ieeexplore.ieee.org/abstract/document/9118879
     :param inp: input tensor
     :param nfilters: number of filter of convolutional layers
@@ -174,68 +174,75 @@ def conv_standard_post(inp, nfilters, ratio, pre_act=False, shortcut='conv'):
     """
 
     x1 = inp
+    bn_name = 'bn_' + str(index)
+    elu_name = 'elu_' + str(index)
+    conv_name = 'conv_' + str(index)
 
     if pre_act:
 
-        x = BatchNormalization()(inp)
-        x = ELU()(x)
-        x = Conv2D(nfilters, 3, padding='same')(x)
+        x = BatchNormalization(name=bn_name + '_a')(inp)
+        x = ELU(name=elu_name)(x)
+        x = Conv2D(nfilters, 3, padding='same', name=conv_name + '_a')(x)
 
-        x = BatchNormalization()(x)
-        x = Conv2D(nfilters, 3, padding='same')(x)
+        x = BatchNormalization(name=bn_name + '_b')(x)
+        x = Conv2D(nfilters, 3, padding='same', name=conv_name + '_b')(x)
 
     else:
 
-        x = Conv2D(nfilters, 3, padding='same')(inp)
-        x = BatchNormalization()(x)
-        x = ELU()(x)
+        x = Conv2D(nfilters, 3, padding='same', name=conv_name + '_a')(inp)
+        x = BatchNormalization(name=bn_name + '_a')(x)
+        x = ELU(name=elu_name)(x)
 
-        x = Conv2D(nfilters, 3, padding='same')(x)
-        x = BatchNormalization()(x)
+        x = Conv2D(nfilters, 3, padding='same', name=conv_name + '_b')(x)
+        x = BatchNormalization(name=bn_name + '_b')(x)
 
     if shortcut == 'conv':
-        x1 = Conv2D(nfilters, 1, padding='same')(x1)
-        x1 = BatchNormalization()(x1)
+        x1 = Conv2D(nfilters, 1, padding='same', name=conv_name + '_shortcut')(x1)
+        x1 = BatchNormalization(name=bn_name + '_shortcut')(x1)
     else:
-        x1 = Lambda(pad_matrix_global, arguments={'type': shortcut})(x1)
+        x1 = Lambda(pad_matrix_global, arguments={'type': shortcut}, name='lambda_padding_' + str(index))(x1)
 
     if K.int_shape(x)[3] != K.int_shape(x1)[3]:
-        x = add([x, Lambda(lambda y: K.repeat_elements(y, rep=int(K.int_shape(x)[3]//K.int_shape(x1)[3]), axis=3))(x1)])
+        x = add(
+            [x, Lambda(lambda y: K.repeat_elements(y, rep=int(K.int_shape(x)[3] // K.int_shape(x1)[3]), axis=3),
+                       name='lambda_add_' + str(index) + '_a')(x1)])
     else:
         x = add([x, x1])
-    x = ELU()(x)
+    x = ELU(name=elu_name + '_after_addition')(x)
 
     x = channel_spatial_squeeze_excite(x, ratio=ratio)
 
     if K.int_shape(x)[3] != K.int_shape(x1)[3]:
-        x = add([x, Lambda(lambda y: K.repeat_elements(y, rep=int(K.int_shape(x)[3]//K.int_shape(x1)[3]), axis=3))(x1)])
+        x = add(
+            [x, Lambda(lambda y: K.repeat_elements(y, rep=int(K.int_shape(x)[3] // K.int_shape(x1)[3]), axis=3),
+                       name='lambda_add_' + str(index) + '_b')(x1)])
     else:
         x = add([x, x1])
 
     return x
 
 
-def network_module(inp, nfilters, ratio, pool_size, dropout_rate, pre_act=False, shortcut='conv'):
+def network_module(inp, nfilters, ratio, pool_size, dropout_rate, index, pre_act=False, shortcut='conv'):
     """ Implementation presented in https://ieeexplore.ieee.org/abstract/document/9118879
     :param inp: input tensor
     :param nfilters: number of filter of convolutional layers
     :param ratio: parameter for squeeze-excitation module
     :param pool_size: size of the pool
     :param dropout_rate: rate for dropout
+    :param index:
     :param pre_act: pre_activation flag
     :param shortcut:
     :return:
     """
-    x = conv_standard_post(inp, nfilters, ratio, pre_act=pre_act, shortcut=shortcut)
+    x = conv_standard_post(inp, nfilters, ratio, index, pre_act=pre_act, shortcut=shortcut)
 
-    x = MaxPooling2D(pool_size=pool_size)(x)
-    x = Dropout(dropout_rate)(x)
+    x = MaxPooling2D(pool_size=pool_size, name='pool_' + str(index))(x)
+    x = Dropout(dropout_rate, name='dropout_' + str(index))(x)
 
     return x
 
 
 def pad_matrix_global(inp, type='global_avg'):
-
     h = K.int_shape(inp)[1]
     w = K.int_shape(inp)[2]
 
