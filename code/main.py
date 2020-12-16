@@ -22,7 +22,7 @@ from models import res_conv_standard_post_csse, res_conv_standard_post_csse_spli
 from tests import (check_reshape_variable, check_model_depth, check_alpha_list, check_loss_type, check_data_generator,
                    check_training_verbose, is_boolean, check_callbacks)
 
-__author__ = "Javier Naranjo, Sergi Perez and Irene Martín"
+__authors__ = "Javier Naranjo, Sergi Perez and Irene Martín"
 __copyright__ = "Machine Listeners Valencia"
 __credits__ = ["Machine Listeners Valencia"]
 __license__ = "MIT License"
@@ -30,6 +30,7 @@ __version__ = "0.1.0"
 __maintainer__ = "Javier Naranjo"
 __email__ = "janal2@alumni.uv.es"
 __status__ = "Dev"
+__date__ = "2020"
 
 # {code}
 

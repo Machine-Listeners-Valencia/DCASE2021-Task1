@@ -4,6 +4,16 @@ from keras.layers import (GlobalAveragePooling2D, GlobalMaxPooling2D, Dense,
 import keras.backend as K
 import warnings
 
+__authors__ = "Javier Naranjo, Sergi Perez and Irene Martín"
+__copyright__ = "Machine Listeners Valencia"
+__credits__ = ["Machine Listeners Valencia"]
+__license__ = "MIT License"
+__version__ = "0.1.0"
+__maintainer__ = "Javier Naranjo"
+__email__ = "janal2@alumni.uv.es"
+__status__ = "Dev"
+__date__ = "2020"
+
 
 def _obtain_input_shape(input_shape,
                         default_size,

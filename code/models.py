@@ -4,6 +4,17 @@ from modules import network_module, freq_split
 from keras.models import Model
 
 
+__authors__ = "Javier Naranjo, Sergi Perez and Irene Martín"
+__copyright__ = "Machine Listeners Valencia"
+__credits__ = ["Machine Listeners Valencia"]
+__license__ = "MIT License"
+__version__ = "0.1.0"
+__maintainer__ = "Javier Naranjo"
+__email__ = "janal2@alumni.uv.es"
+__status__ = "Dev"
+__date__ = "2020"
+
+
 def res_conv_standard_post_csse(h, w, n_channels, n_classes,
                                 nfilters, pools_size, dropouts_rate, ratio, reshape_type, dense_layer,
                                 pre_act=False, shortcut='conv', verbose=False):

@@ -1,8 +1,18 @@
+import keras
+
 import config
 from callbacks import lr_on_plateau, early_stopping, GetLRAfterEpoch
-import os
-import keras
 from utils import create_folder_time, moving_config_file_to_folder
+
+__authors__ = "Javier Naranjo, Sergi Perez and Irene Martín"
+__copyright__ = "Machine Listeners Valencia"
+__credits__ = ["Machine Listeners Valencia"]
+__license__ = "MIT License"
+__version__ = "0.1.0"
+__maintainer__ = "Javier Naranjo"
+__email__ = "janal2@alumni.uv.es"
+__status__ = "Dev"
+__date__ = "2020"
 
 
 def check_reshape_variable(reshape_method):
