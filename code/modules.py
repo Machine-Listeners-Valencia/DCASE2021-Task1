@@ -1,8 +1,18 @@
-from keras.layers import (GlobalAveragePooling2D, Dense,
+from keras.layers import (GlobalAveragePooling2D, GlobalMaxPooling2D, Dense,
                           multiply, add, Permute, Conv2D,
-                          Reshape, BatchNormalization, ELU, MaxPooling2D, Dropout)
+                          Reshape, BatchNormalization, ELU, MaxPooling2D, Dropout, Lambda)
 import keras.backend as K
 import warnings
+
+__authors__ = "Javier Naranjo, Sergi Perez and Irene Martín"
+__copyright__ = "Machine Listeners Valencia"
+__credits__ = ["Machine Listeners Valencia"]
+__license__ = "MIT License"
+__version__ = "0.2.0"
+__maintainer__ = "Javier Naranjo"
+__email__ = "janal2@alumni.uv.es"
+__status__ = "Dev"
+__date__ = "2020"
 
 
 def _obtain_input_shape(input_shape,
@@ -162,54 +172,125 @@ def channel_spatial_squeeze_excite(input_tensor, ratio=16):
     return x
 
 
-def conv_standard_post(inp, nfilters, ratio):
+def conv_standard_post(inp, nfilters, ratio, index, pre_act=False, shortcut='conv'):
     """ Module presented in https://ieeexplore.ieee.org/abstract/document/9118879
     :param inp: input tensor
     :param nfilters: number of filter of convolutional layers
     :param ratio: parameter for squeeze-excitation module
+    :param pre_act:
+    :param shortcut:
     :return: tensor
     """
 
     x1 = inp
+    bn_name = 'bn_' + str(index)
+    elu_name = 'elu_' + str(index)
+    conv_name = 'conv_' + str(index)
 
-    x = Conv2D(nfilters, 3, padding='same')(inp)
-    x = BatchNormalization()(x)
-    x = ELU()(x)
+    if pre_act:
 
-    x = Conv2D(nfilters, 3, padding='same')(x)
-    x = BatchNormalization()(x)
+        x = BatchNormalization(name=bn_name + '_a')(inp)
+        x = ELU(name=elu_name)(x)
+        x = Conv2D(nfilters, 3, padding='same', name=conv_name + '_a')(x)
 
-    x1 = Conv2D(nfilters, 1, padding='same')(x1)
-    x1 = BatchNormalization()(x1)
+        x = BatchNormalization(name=bn_name + '_b')(x)
+        x = Conv2D(nfilters, 3, padding='same', name=conv_name + '_b')(x)
 
-    x = add([x, x1])
-    x = ELU()(x)
+    else:
+
+        x = Conv2D(nfilters, 3, padding='same', name=conv_name + '_a')(inp)
+        x = BatchNormalization(name=bn_name + '_a')(x)
+        x = ELU(name=elu_name)(x)
+
+        x = Conv2D(nfilters, 3, padding='same', name=conv_name + '_b')(x)
+        x = BatchNormalization(name=bn_name + '_b')(x)
+
+    if shortcut == 'conv':
+        x1 = Conv2D(nfilters, 1, padding='same', name=conv_name + '_shortcut')(x1)
+        x1 = BatchNormalization(name=bn_name + '_shortcut')(x1)
+    elif shortcut == 'global_avg' or shortcut == 'global_max':
+        x1 = Lambda(pad_matrix_global, arguments={'type': shortcut}, name='lambda_padding_' + str(index))(x1)
+
+    x = module_addition(x, x1, index, 'a')
+
+    x = ELU(name=elu_name + '_after_addition')(x)
 
     x = channel_spatial_squeeze_excite(x, ratio=ratio)
 
-    x = add([x, x1])
+    x = module_addition(x, x1, index, 'b')
 
     return x
 
 
-def network_module(inp, nfilters, ratio, pool_size, dropout_rate):
+def network_module(inp, nfilters, ratio, pool_size, dropout_rate, index, pre_act=False, shortcut='conv'):
     """ Implementation presented in https://ieeexplore.ieee.org/abstract/document/9118879
     :param inp: input tensor
     :param nfilters: number of filter of convolutional layers
     :param ratio: parameter for squeeze-excitation module
     :param pool_size: size of the pool
     :param dropout_rate: rate for dropout
+    :param index:
+    :param pre_act: pre_activation flag
+    :param shortcut:
     :return:
     """
-    x = conv_standard_post(inp, nfilters, ratio)
+    x = conv_standard_post(inp, nfilters, ratio, index, pre_act=pre_act, shortcut=shortcut)
 
-    x = MaxPooling2D(pool_size=pool_size)(x)
-    x = Dropout(dropout_rate)(x)
+    x = MaxPooling2D(pool_size=pool_size, name='pool_' + str(index))(x)
+    x = Dropout(dropout_rate, name='dropout_' + str(index))(x)
 
     return x
 
 
+def module_addition(inp1, inp2, index, suffix):
+    """
+
+    :param inp1:
+    :param inp2:
+    :param index:
+    :param suffix:
+    :return:
+    """
+    if K.int_shape(inp1)[3] != K.int_shape(inp2)[3]:
+        x = add(
+            [inp1, Lambda(lambda y: K.repeat_elements(y, rep=int(K.int_shape(inp1)[3] // K.int_shape(inp2)[3]), axis=3),
+                          name='lambda_add_' + str(index) + '_' + str(suffix))(inp2)])
+    else:
+        x = add([inp1, inp2])
+
+    return x
+
+
+def pad_matrix_global(inp, type='global_avg'):
+    """
+
+    :param inp:
+    :param type:
+    :return:
+    """
+    h = K.int_shape(inp)[1]
+    w = K.int_shape(inp)[2]
+
+    if type == 'global_avg':
+        x1 = GlobalAveragePooling2D()(inp)
+    elif type == 'global_max':
+        x1 = GlobalMaxPooling2D()(inp)
+
+    x1_rep = K.repeat(x1, h * w)
+    x1_rep = Reshape((K.int_shape(x1)[1], h, w))(x1_rep)
+    x1_rep = K.permute_dimensions(x1_rep, (0, 2, 3, 1))
+
+    return x1_rep
+
+
 def freq_split(inp, n_split_freqs, f_split_freqs):
+    """
+
+    :param inp:
+    :param n_split_freqs:
+    :param f_split_freqs:
+    :return:
+    """
     if n_split_freqs == 2:
         x1 = inp[:, 0:f_split_freqs[0], :, :]
         x2 = inp[:, f_split_freqs[0]:, :, :]

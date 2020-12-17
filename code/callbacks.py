@@ -5,6 +5,16 @@ import math
 import keras
 from keras import backend as K
 
+__authors__ = "Javier Naranjo, Sergi Perez and Irene Martín"
+__copyright__ = "Machine Listeners Valencia"
+__credits__ = ["Machine Listeners Valencia"]
+__license__ = "MIT License"
+__version__ = "1.0.0"
+__maintainer__ = "Javier Naranjo"
+__email__ = "janal2@alumni.uv.es"
+__status__ = "Production"
+__date__ = "2020"
+
 
 def plot_loss_history(history):
     plt.plot(history.history['loss'])

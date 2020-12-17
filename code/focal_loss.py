@@ -2,6 +2,17 @@ import numpy as np
 from keras import backend as K
 import tensorflow as tf
 
+__authors__ = "Javier Naranjo, Sergi Perez and Irene Martín"
+__copyright__ = "Machine Listeners Valencia"
+__credits__ = ["Machine Listeners Valencia"]
+__license__ = "MIT License"
+__version__ = "1.0.0"
+__maintainer__ = "Javier Naranjo"
+__email__ = "janal2@alumni.uv.es"
+__status__ = "Production"
+__date__ = "2020"
+
+
 def binary_focal_loss(gamma=2., alpha=.25):
     """
     Binary form of focal loss.

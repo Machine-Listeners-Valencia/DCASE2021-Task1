@@ -1,8 +1,18 @@
+import keras
+
 import config
 from callbacks import lr_on_plateau, early_stopping, GetLRAfterEpoch
-import os
-import keras
 from utils import create_folder_time, moving_config_file_to_folder
+
+__authors__ = "Javier Naranjo, Sergi Perez and Irene Martín"
+__copyright__ = "Machine Listeners Valencia"
+__credits__ = ["Machine Listeners Valencia"]
+__license__ = "MIT License"
+__version__ = "0.2.0"
+__maintainer__ = "Javier Naranjo"
+__email__ = "janal2@alumni.uv.es"
+__status__ = "Dev"
+__date__ = "2020"
 
 
 def check_reshape_variable(reshape_method):
@@ -117,3 +127,10 @@ def check_split_freqs(split_freqs, n_split_freqs, f_split_freqs):
     if split_freqs is True:
         if n_split_freqs - len(f_split_freqs) != 1:
             raise Exception('Number of split frequencies and frequencies cutoff do not match.')
+
+
+def check_shortcut_type(shortcut):
+    possible_options = ['conv', 'global_avg', 'global_max', 'identity']
+
+    if shortcut not in possible_options:
+        raise Exception('Defined shortcut is not available. Possible options are: {}'.format(possible_options))

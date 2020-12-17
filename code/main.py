@@ -1,12 +1,38 @@
+"""
+Description: main file to execute submission system. Please README.md for further instructions and check packages
+            versions as defined in [requirements.txt] and [tf1-15.yml].
+            Execution configuration is defined using [config.py].
+
+License: MIT License
+"""
+
+# Futures
+
+# Generic/Built-in
+
+# Other Libs
 import numpy as np
 
+# Owned
 import config
 from data_augmentation import MixupGenerator
 from focal_loss import categorical_focal_loss
 from load_data import load_h5s
 from models import res_conv_standard_post_csse, res_conv_standard_post_csse_split_freqs
 from tests import (check_reshape_variable, check_model_depth, check_alpha_list, check_loss_type, check_data_generator,
-                   check_training_verbose, is_boolean, check_callbacks)
+                   check_training_verbose, is_boolean, check_callbacks, check_shortcut_type)
+
+__authors__ = "Javier Naranjo, Sergi Perez and Irene Martín"
+__copyright__ = "Machine Listeners Valencia"
+__credits__ = ["Machine Listeners Valencia"]
+__license__ = "MIT License"
+__version__ = "0.2.0"
+__maintainer__ = "Javier Naranjo"
+__email__ = "janal2@alumni.uv.es"
+__status__ = "Dev"
+__date__ = "2020"
+
+# {code}
 
 # check config options
 check_reshape_variable(config.reshape_method)
@@ -15,6 +41,7 @@ check_loss_type(config.loss_type)
 check_data_generator(config.data_augmentation)
 tr_verbose = check_training_verbose(config.training_verbose)
 is_boolean(config.quick_test)
+check_shortcut_type(config.shortcut)
 
 # loading training data
 X, Y, val_x, val_y = load_h5s(config.data_path)
@@ -28,14 +55,15 @@ if config.split_freqs is not True:
     model = res_conv_standard_post_csse(X.shape[1], X.shape[2], X.shape[3], Y.shape[1],
                                         config.n_filters, config.pools_size, config.dropouts_rate, config.ratio,
                                         config.reshape_method, config.dense_layer,
-                                        verbose=config.verbose)
+                                        pre_act=config.pre_act, shortcut=config.shortcut, verbose=config.verbose)
 
 else:
     model = res_conv_standard_post_csse_split_freqs(X.shape[1], X.shape[2], X.shape[3], Y.shape[1],
                                                     config.n_filters, config.pools_size, config.dropouts_rate,
                                                     config.ratio,
                                                     config.reshape_method, config.dense_layer,
-                                                    config.n_split_freqs, config.f_split_freqs, verbose=config.verbose)
+                                                    config.n_split_freqs, config.f_split_freqs,
+                                                    pre_act=config.pre_act, shortcut=config.shortcut, verbose=config.verbose)
 
 # checking focal loss if necessary
 if config.loss_type == 'focal_loss':

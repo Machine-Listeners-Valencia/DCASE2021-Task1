@@ -2,6 +2,17 @@ import threading
 import numpy as np
 
 
+__authors__ = "Javier Naranjo, Sergi Perez and Irene Martín"
+__copyright__ = "Machine Listeners Valencia"
+__credits__ = ["Machine Listeners Valencia"]
+__license__ = "MIT License"
+__version__ = "1.0.0"
+__maintainer__ = "Javier Naranjo"
+__email__ = "janal2@alumni.uv.es"
+__status__ = "Production"
+__date__ = "2020"
+
+
 def threadsafe_generator(f):
     """A decorator that takes a generator function and makes it thread-safe.
     """
