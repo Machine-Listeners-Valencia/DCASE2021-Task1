@@ -8,7 +8,7 @@ __authors__ = "Javier Naranjo, Sergi Perez and Irene Martín"
 __copyright__ = "Machine Listeners Valencia"
 __credits__ = ["Machine Listeners Valencia"]
 __license__ = "MIT License"
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 __maintainer__ = "Javier Naranjo"
 __email__ = "janal2@alumni.uv.es"
 __status__ = "Dev"
@@ -208,7 +208,7 @@ def conv_standard_post(inp, nfilters, ratio, index, pre_act=False, shortcut='con
     if shortcut == 'conv':
         x1 = Conv2D(nfilters, 1, padding='same', name=conv_name + '_shortcut')(x1)
         x1 = BatchNormalization(name=bn_name + '_shortcut')(x1)
-    else:
+    elif shortcut == 'global_avg' or shortcut == 'global_max':
         x1 = Lambda(pad_matrix_global, arguments={'type': shortcut}, name='lambda_padding_' + str(index))(x1)
 
     x = module_addition(x, x1, index, 'a')

@@ -20,13 +20,13 @@ from focal_loss import categorical_focal_loss
 from load_data import load_h5s
 from models import res_conv_standard_post_csse, res_conv_standard_post_csse_split_freqs
 from tests import (check_reshape_variable, check_model_depth, check_alpha_list, check_loss_type, check_data_generator,
-                   check_training_verbose, is_boolean, check_callbacks)
+                   check_training_verbose, is_boolean, check_callbacks, check_shortcut_type)
 
 __authors__ = "Javier Naranjo, Sergi Perez and Irene Martín"
 __copyright__ = "Machine Listeners Valencia"
 __credits__ = ["Machine Listeners Valencia"]
 __license__ = "MIT License"
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 __maintainer__ = "Javier Naranjo"
 __email__ = "janal2@alumni.uv.es"
 __status__ = "Dev"
@@ -41,6 +41,7 @@ check_loss_type(config.loss_type)
 check_data_generator(config.data_augmentation)
 tr_verbose = check_training_verbose(config.training_verbose)
 is_boolean(config.quick_test)
+check_shortcut_type(config.shortcut)
 
 # loading training data
 X, Y, val_x, val_y = load_h5s(config.data_path)
