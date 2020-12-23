@@ -71,7 +71,7 @@ def is_boolean(inp):
         raise Exception('Variable {} is not a boolean variable, please check in config file'.format(inp))
 
 
-def check_callbacks():
+def check_callbacks(home_path):
     if (config.early_stopping is not True and config.get_lr_after_epoch is not True
             and config.factor_lr_on_plateau and config.save_outputs is not True):
         return None
@@ -105,8 +105,8 @@ def check_callbacks():
 
         if config.save_outputs is True:
 
-            folder_path = create_folder_time()
-            moving_config_file_to_folder(folder_path)
+            folder_path = create_folder_time(home_path)
+            moving_config_file_to_folder(home_path, folder_path)
             save_best = keras.callbacks.ModelCheckpoint(folder_path + config.best_model_name, save_best_only=True,
                                                         monitor='val_categorical_accuracy')
             save = keras.callbacks.ModelCheckpoint(folder_path + config.last_model_name)

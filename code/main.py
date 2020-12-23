@@ -26,7 +26,7 @@ __authors__ = "Javier Naranjo, Sergi Perez and Irene Martín"
 __copyright__ = "Machine Listeners Valencia"
 __credits__ = ["Machine Listeners Valencia"]
 __license__ = "MIT License"
-__version__ = "0.2.0"
+__version__ = "0.3.0"
 __maintainer__ = "Javier Naranjo"
 __email__ = "janal2@alumni.uv.es"
 __status__ = "Dev"
@@ -44,7 +44,7 @@ is_boolean(config.quick_test)
 check_shortcut_type(config.shortcut)
 
 # loading training data
-X, Y, val_x, val_y = load_h5s(config.data_path)
+X, Y, val_x, val_y = load_h5s(config.home_path, config.data_path, config.validation_file, config.training_file)
 
 print('Training shape: {}'.format(X.shape))
 print('Validation shape: {}'.format(val_x.shape))
@@ -90,7 +90,7 @@ else:
 if config.data_augmentation == 'mixup':
     train_datagen = MixupGenerator(X, Y, batch_size=config.batch_size, alpha=config.mixup_alpha)()
 
-callbacks = check_callbacks()
+callbacks = check_callbacks(config.home_path)
 
 if config.data_augmentation is not None:
     history = model.fit_generator(train_datagen,
