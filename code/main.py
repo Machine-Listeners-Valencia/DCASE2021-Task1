@@ -55,7 +55,8 @@ if config.split_freqs is not True:
     model = res_conv_standard_post_csse(x.shape[1], x.shape[2], x.shape[3], y.shape[1],
                                         config.n_filters, config.pools_size, config.dropouts_rate, config.ratio,
                                         config.reshape_method, config.dense_layer,
-                                        pre_act=config.pre_act, shortcut=config.shortcut, verbose=config.verbose)
+                                        pre_act=config.pre_act, shortcut=config.shortcut, verbose=config.verbose,
+                                        binary_layer=config.binary_layer)
 
 else:
     model = res_conv_standard_post_csse_split_freqs(x.shape[1], x.shape[2], x.shape[3], y.shape[1],
@@ -63,7 +64,8 @@ else:
                                                     config.ratio,
                                                     config.reshape_method, config.dense_layer,
                                                     config.n_split_freqs, config.f_split_freqs,
-                                                    pre_act=config.pre_act, shortcut=config.shortcut, verbose=config.verbose)
+                                                    pre_act=config.pre_act, shortcut=config.shortcut,
+                                                    verbose=config.verbose, binary_layer=config.binary_layer)
 
 # checking focal loss if necessary
 if config.loss_type == 'focal_loss':

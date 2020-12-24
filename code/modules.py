@@ -1,8 +1,10 @@
-from keras.layers import (GlobalAveragePooling2D, GlobalMaxPooling2D, Dense,
+from tensorflow.keras.layers import (GlobalAveragePooling2D, GlobalMaxPooling2D, Dense,
                           multiply, add, Permute, Conv2D,
                           Reshape, BatchNormalization, ELU, MaxPooling2D, Dropout, Lambda)
-import keras.backend as K
+import tensorflow.keras.backend as K
 import warnings
+from complexity_considerations.binary_layer import BinaryConv2D
+from tensorflow.keras.regularizers import l2
 
 __authors__ = "Javier Naranjo, Sergi Perez and Irene Martín"
 __copyright__ = "Machine Listeners Valencia"
@@ -109,7 +111,8 @@ def _obtain_input_shape(input_shape,
 
 
 def _tensor_shape(tensor):
-    return getattr(tensor, '_keras_shape')
+    # return getattr(tensor, '_keras_shape')
+    return getattr(tensor, '_shape_val')
 
 
 def squeeze_excite_block(input_tensor, ratio=16):
@@ -172,13 +175,14 @@ def channel_spatial_squeeze_excite(input_tensor, ratio=16):
     return x
 
 
-def conv_standard_post(inp, nfilters, ratio, index, pre_act=False, shortcut='conv'):
+def conv_standard_post(inp, nfilters, ratio, index, pre_act=False, shortcut='conv', binary_layer=False):
     """ Module presented in https://ieeexplore.ieee.org/abstract/document/9118879
     :param inp: input tensor
     :param nfilters: number of filter of convolutional layers
     :param ratio: parameter for squeeze-excitation module
     :param pre_act:
     :param shortcut:
+    :param binary_layer:
     :return: tensor
     """
 
@@ -191,22 +195,40 @@ def conv_standard_post(inp, nfilters, ratio, index, pre_act=False, shortcut='con
 
         x = BatchNormalization(name=bn_name + '_a')(inp)
         x = ELU(name=elu_name)(x)
-        x = Conv2D(nfilters, 3, padding='same', name=conv_name + '_a')(x)
+
+        if binary_layer is True:
+            x = BinaryConv2D(nfilters, kernel_size=3, use_bias=False, padding='same', name=conv_name + '_a')(x)
+        else:
+            x = Conv2D(nfilters, 3, padding='same', name=conv_name + '_a')(x)
 
         x = BatchNormalization(name=bn_name + '_b')(x)
-        x = Conv2D(nfilters, 3, padding='same', name=conv_name + '_b')(x)
+
+        if binary_layer is True:
+            x = BinaryConv2D(nfilters, kernel_size=3, use_bias=False, padding='same', name=conv_name + '_b')(x)
+        else:
+            x = Conv2D(nfilters, 3, padding='same', name=conv_name + '_b')(x)
 
     else:
 
-        x = Conv2D(nfilters, 3, padding='same', name=conv_name + '_a')(inp)
+        if binary_layer is True:
+            x = BinaryConv2D(nfilters, kernel_size=3, use_bias=False, padding='same', name=conv_name + '_a')(inp)
+        else:
+            x = Conv2D(nfilters, 3, padding='same', name=conv_name + '_a')(inp)
         x = BatchNormalization(name=bn_name + '_a')(x)
         x = ELU(name=elu_name)(x)
 
-        x = Conv2D(nfilters, 3, padding='same', name=conv_name + '_b')(x)
+        if binary_layer is True:
+            x = BinaryConv2D(nfilters, kernel_size=3, use_bias=False, padding='same', name=conv_name + '_b')(x)
+        else:
+            x = Conv2D(nfilters, 3, padding='same', name=conv_name + '_b')(x)
         x = BatchNormalization(name=bn_name + '_b')(x)
 
     if shortcut == 'conv':
-        x1 = Conv2D(nfilters, 1, padding='same', name=conv_name + '_shortcut')(x1)
+
+        if binary_layer is True:
+            x1 = BinaryConv2D(nfilters, kernel_size=1, use_bias=False, padding='same', name=conv_name + '_shortcut')(x1)
+        else:
+            x1 = Conv2D(nfilters, 1, padding='same', name=conv_name + '_shortcut')(x1)
         x1 = BatchNormalization(name=bn_name + '_shortcut')(x1)
     elif shortcut == 'global_avg' or shortcut == 'global_max':
         x1 = Lambda(pad_matrix_global, arguments={'type': shortcut}, name='lambda_padding_' + str(index))(x1)
@@ -222,7 +244,8 @@ def conv_standard_post(inp, nfilters, ratio, index, pre_act=False, shortcut='con
     return x
 
 
-def network_module(inp, nfilters, ratio, pool_size, dropout_rate, index, pre_act=False, shortcut='conv'):
+def network_module(inp, nfilters, ratio, pool_size, dropout_rate, index, pre_act=False, shortcut='conv',
+                   binary_layer=False):
     """ Implementation presented in https://ieeexplore.ieee.org/abstract/document/9118879
     :param inp: input tensor
     :param nfilters: number of filter of convolutional layers
@@ -232,9 +255,10 @@ def network_module(inp, nfilters, ratio, pool_size, dropout_rate, index, pre_act
     :param index:
     :param pre_act: pre_activation flag
     :param shortcut:
+    :param binary_layer:
     :return:
     """
-    x = conv_standard_post(inp, nfilters, ratio, index, pre_act=pre_act, shortcut=shortcut)
+    x = conv_standard_post(inp, nfilters, ratio, index, pre_act=pre_act, shortcut=shortcut, binary_layer=binary_layer)
 
     x = MaxPooling2D(pool_size=pool_size, name='pool_' + str(index))(x)
     x = Dropout(dropout_rate, name='dropout_' + str(index))(x)

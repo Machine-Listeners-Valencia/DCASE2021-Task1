@@ -1,4 +1,5 @@
 from complexity_considerations.model_size import get_keras_model_size
+from complexity_considerations.convert_to_1bit import convert_to_1bit_conv
 from keras.models import load_model
 from focal_loss import categorical_focal_loss
 import dill
@@ -27,3 +28,4 @@ if __name__ == '__main__':
     model = load_model(model_path, custom_objects=custom_object)
     print(model.summary())
     get_model_size(model)
+    convert_to_1bit_conv(model)
