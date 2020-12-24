@@ -1,11 +1,12 @@
 import threading
 import numpy as np
+from tensorflow.keras.utils import Sequence
 
 __authors__ = "Javier Naranjo, Sergi Perez and Irene Martín"
 __copyright__ = "Machine Listeners Valencia"
 __credits__ = ["Machine Listeners Valencia"]
 __license__ = "MIT License"
-__version__ = "1.1.0"
+__version__ = "1.2.0"
 __maintainer__ = "Javier Naranjo"
 __email__ = "janal2@alumni.uv.es"
 __status__ = "Production"
@@ -40,7 +41,7 @@ class threadsafe_iter:
             return self.it.__next__()
 
 
-class MixupGenerator():
+class MixupGenerator(Sequence):
     def __init__(self, x_train, y_train, batch_size=32, alpha=0.2, shuffle=True):
         self.X_train = x_train
         self.y_train = y_train
@@ -53,7 +54,7 @@ class MixupGenerator():
     def __iter__(self):
         return self
 
-    @threadsafe_generator
+    #@threadsafe_generator
     def __call__(self):
         with self.lock:
             while True:

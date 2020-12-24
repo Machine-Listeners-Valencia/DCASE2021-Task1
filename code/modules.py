@@ -1,6 +1,6 @@
 from tensorflow.keras.layers import (GlobalAveragePooling2D, GlobalMaxPooling2D, Dense,
-                          multiply, add, Permute, Conv2D,
-                          Reshape, BatchNormalization, ELU, MaxPooling2D, Dropout, Lambda)
+                                     multiply, add, Permute, Conv2D,
+                                     Reshape, BatchNormalization, ELU, MaxPooling2D, Dropout, Lambda)
 import tensorflow.keras.backend as K
 import warnings
 from complexity_considerations.binary_layer import BinaryConv2D
@@ -10,7 +10,7 @@ __authors__ = "Javier Naranjo, Sergi Perez and Irene Martín"
 __copyright__ = "Machine Listeners Valencia"
 __credits__ = ["Machine Listeners Valencia"]
 __license__ = "MIT License"
-__version__ = "0.3.0"
+__version__ = "0.4.0"
 __maintainer__ = "Javier Naranjo"
 __email__ = "janal2@alumni.uv.es"
 __status__ = "Dev"
@@ -141,23 +141,28 @@ def squeeze_excite_block(input_tensor, ratio=16):
     return x
 
 
-def spatial_squeeze_excite_block(input_tensor):
+def spatial_squeeze_excite_block(input_tensor, binary_layer=False):
     """ Create a spatial squeeze-excite block
     Args:
         input_tensor: input Keras tensor
     Returns: a Keras tensor
     References
     -   [Concurrent Spatial and Channel Squeeze & Excitation in Fully Convolutional Networks](https://arxiv.org/abs/1803.02579)
+    :param binary_layer:
     """
 
-    se = Conv2D(1, (1, 1), activation='sigmoid', use_bias=False,
-                kernel_initializer='he_normal')(input_tensor)
+    if binary_layer is True:
+        se = BinaryConv2D(1, kernel_size=1, activation='sigmoid', use_bias=False,
+                          kernel_initializer='he_normal')(input_tensor)
+    else:
+        se = Conv2D(1, (1, 1), activation='sigmoid', use_bias=False,
+                    kernel_initializer='he_normal')(input_tensor)
 
     x = multiply([input_tensor, se])
     return x
 
 
-def channel_spatial_squeeze_excite(input_tensor, ratio=16):
+def channel_spatial_squeeze_excite(input_tensor, ratio=16, binary_layer=False):
     """ Create a spatial squeeze-excite block
     Args:
         input_tensor: input Keras tensor
@@ -169,7 +174,7 @@ def channel_spatial_squeeze_excite(input_tensor, ratio=16):
     """
 
     cse = squeeze_excite_block(input_tensor, ratio)
-    sse = spatial_squeeze_excite_block(input_tensor)
+    sse = spatial_squeeze_excite_block(input_tensor, binary_layer=binary_layer)
 
     x = add([cse, sse])
     return x
@@ -237,7 +242,7 @@ def conv_standard_post(inp, nfilters, ratio, index, pre_act=False, shortcut='con
 
     x = ELU(name=elu_name + '_after_addition')(x)
 
-    x = channel_spatial_squeeze_excite(x, ratio=ratio)
+    x = channel_spatial_squeeze_excite(x, ratio=ratio, binary_layer=binary_layer)
 
     x = module_addition(x, x1, index, 'b')
 
