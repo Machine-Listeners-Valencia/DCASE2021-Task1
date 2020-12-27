@@ -1,15 +1,16 @@
 # data paths
+home_path = None
 data_path: str = '/repos/DCASE2021-Task1/data/gammatone_64/'
 code_path: str = '/repos/DCASE2021-Task1/code/'
-
-# audio representation hyperparameters
-# freq_bands = 64
+training_file: str = 'train_val_gammatone_mono_f1.h5'
+validation_file: str = 'train_val_gammatone_mono_f2.h5'
 
 # model parameters
 verbose: bool = True  # [True, False]
 n_filters: list = [32, 64, 128]
 pools_size: list = [(1, 10), (1, 5), (1, 5)]
 dropouts_rate: list = [0.3, 0.3, 0.3]
+binary_layer: bool = True
 
 ratio: int = 2
 pre_act: bool = False
