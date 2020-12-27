@@ -18,7 +18,7 @@ import config
 from data_augmentation import MixupGenerator
 from focal_loss import categorical_focal_loss
 from load_data import load_h5s
-from models import res_conv_standard_post_csse, res_conv_standard_post_csse_split_freqs
+from models import construct_model
 from tests import (check_reshape_variable, check_model_depth, check_alpha_list, check_loss_type, check_data_generator,
                    check_training_verbose, is_boolean, check_callbacks, check_shortcut_type)
 
@@ -26,7 +26,7 @@ __authors__ = "Javier Naranjo, Sergi Perez and Irene Martín"
 __copyright__ = "Machine Listeners Valencia"
 __credits__ = ["Machine Listeners Valencia"]
 __license__ = "MIT License"
-__version__ = "0.5.0"
+__version__ = "0.6.0"
 __maintainer__ = "Javier Naranjo"
 __email__ = "janal2@alumni.uv.es"
 __status__ = "Dev"
@@ -51,21 +51,23 @@ print('Validation shape: {}'.format(val_x.shape))
 
 # creating model
 
-if config.split_freqs is not True:
-    model = res_conv_standard_post_csse(x.shape[1], x.shape[2], x.shape[3], y.shape[1],
-                                        config.n_filters, config.pools_size, config.dropouts_rate, config.ratio,
-                                        config.reshape_method, config.dense_layer,
-                                        pre_act=config.pre_act, shortcut=config.shortcut, verbose=config.verbose,
-                                        binary_layer=config.binary_layer)
+# if config.split_freqs is not True:
+#     model = res_conv_standard_post_csse(x.shape[1], x.shape[2], x.shape[3], y.shape[1],
+#                                         config.n_filters, config.pools_size, config.dropouts_rate, config.ratio,
+#                                         config.reshape_method, config.dense_layer,
+#                                         pre_act=config.pre_act, shortcut=config.shortcut, verbose=config.verbose,
+#                                         binary_layer=config.binary_layer)
+#
+# else:
+#     model = res_conv_standard_post_csse_split_freqs(x.shape[1], x.shape[2], x.shape[3], y.shape[1],
+#                                                     config.n_filters, config.pools_size, config.dropouts_rate,
+#                                                     config.ratio,
+#                                                     config.reshape_method, config.dense_layer,
+#                                                     config.n_split_freqs, config.f_split_freqs,
+#                                                     pre_act=config.pre_act, shortcut=config.shortcut,
+#                                                     verbose=config.verbose, binary_layer=config.binary_layer)
 
-else:
-    model = res_conv_standard_post_csse_split_freqs(x.shape[1], x.shape[2], x.shape[3], y.shape[1],
-                                                    config.n_filters, config.pools_size, config.dropouts_rate,
-                                                    config.ratio,
-                                                    config.reshape_method, config.dense_layer,
-                                                    config.n_split_freqs, config.f_split_freqs,
-                                                    pre_act=config.pre_act, shortcut=config.shortcut,
-                                                    verbose=config.verbose, binary_layer=config.binary_layer)
+model = construct_model(x, y)
 
 # checking focal loss if necessary
 if config.loss_type == 'focal_loss':

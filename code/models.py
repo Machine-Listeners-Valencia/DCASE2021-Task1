@@ -1,18 +1,38 @@
 import tensorflow.keras.layers
 from modules import network_module, freq_split
+import config
 
 from tensorflow.keras.models import Model
-
 
 __authors__ = "Javier Naranjo, Sergi Perez and Irene Martín"
 __copyright__ = "Machine Listeners Valencia"
 __credits__ = ["Machine Listeners Valencia"]
 __license__ = "MIT License"
-__version__ = "0.2.0"
+__version__ = "0.3.0"
 __maintainer__ = "Javier Naranjo"
 __email__ = "janal2@alumni.uv.es"
 __status__ = "Dev"
 __date__ = "2020"
+
+
+def construct_model(x, y):
+    if config.split_freqs is not True:
+        model = res_conv_standard_post_csse(x.shape[1], x.shape[2], x.shape[3], y.shape[1],
+                                            config.n_filters, config.pools_size, config.dropouts_rate, config.ratio,
+                                            config.reshape_method, config.dense_layer,
+                                            pre_act=config.pre_act, shortcut=config.shortcut, verbose=config.verbose,
+                                            binary_layer=config.binary_layer)
+
+    else:
+        model = res_conv_standard_post_csse_split_freqs(x.shape[1], x.shape[2], x.shape[3], y.shape[1],
+                                                        config.n_filters, config.pools_size, config.dropouts_rate,
+                                                        config.ratio,
+                                                        config.reshape_method, config.dense_layer,
+                                                        config.n_split_freqs, config.f_split_freqs,
+                                                        pre_act=config.pre_act, shortcut=config.shortcut,
+                                                        verbose=config.verbose, binary_layer=config.binary_layer)
+
+    return model
 
 
 def res_conv_standard_post_csse(h, w, n_channels, n_classes,
@@ -66,7 +86,7 @@ def res_conv_standard_post_csse_split_freqs(h, w, n_channels, n_classes,
     if n_split_freqs == 2:
 
         splits = tensorflow.keras.layers.Lambda(freq_split, arguments={'n_split_freqs': n_split_freqs,
-                                                            'f_split_freqs': f_split_freqs})(ip)
+                                                                       'f_split_freqs': f_split_freqs})(ip)
 
         x1 = splits[0]
         x2 = splits[1]
@@ -104,7 +124,7 @@ def res_conv_standard_post_csse_split_freqs(h, w, n_channels, n_classes,
     elif n_split_freqs == 3:
 
         splits = tensorflow.keras.layers.Lambda(freq_split, arguments={'n_split_freqs': n_split_freqs,
-                                                            'f_split_freqs': f_split_freqs})(ip)
+                                                                       'f_split_freqs': f_split_freqs})(ip)
 
         x1 = splits[0]
         x2 = splits[1]

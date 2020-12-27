@@ -13,11 +13,10 @@ def convert_to_1bit_conv(model):
             ww = layer.get_weights()
 
             # storage using 1 bit booleans
-            #binary_weights = (0.5 * (np.sign(ww) + 1.0)).astype('bool')  # save weights as 0 or 1
+            binary_weights = (0.5 * (np.sign(ww) + 1.0)).astype('bool')  # save weights as 0 or 1
 
             #The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
-
-            binary_weights = (0.5 * (np.sign(ww.all()) + 1.0)).astype('bool')  # save weights as 0 or 1
+            #binary_weights = (0.5 * (np.sign(ww.all()) + 1.0)).astype('bool')  # save weights as 0 or 1
             ZeroOneWeightsDict[layer.name] = binary_weights
             AllParamsDict[layer.name] = binary_weights
             NumBinaryWeights += np.prod(ww[0].shape)
