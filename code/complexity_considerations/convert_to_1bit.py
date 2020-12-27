@@ -43,3 +43,26 @@ def convert_to_1bit_conv(model, folder2store):
     print('Num 32-bit weights (all batch norm parameters) = ', int(Num32bitWeights), '; weights memory = ', BNMemory
           , '  kB')
     print('Total memory = ', WeightsMemory + BNMemory, '  MB')
+
+
+def set_to_1bit(model, folder2store):
+    AllParamsDict_loaded = loadmat(folder2store + 'FinalModel_allparams.mat')
+
+    conv_names = [m for m in list(AllParamsDict_loaded.keys()) if any(s in m for s in ['conv'])]
+    bn_names = [m for m in list(AllParamsDict_loaded.keys()) if any(s in m for s in ['bn'])]
+
+    c1 = 0
+    c2 = 0
+    for layer in model.layers:
+        if 'conv' in layer.name:
+            ww = AllParamsDict_loaded[conv_names[c1]].astype('float32') * 2.0 - 1.0
+            ww = ww * np.sqrt(2.0 / np.prod(ww[0].shape[0:3]))
+            layer.set_weights([ww[0]])
+            print('conv layer ', c1, ' has ', len(np.unique(ww)), ' unique weight values')
+            c1 = c1 + 1
+        elif 'bn' in layer.name:
+            ww = AllParamsDict_loaded[bn_names[c2]]
+            layer.set_weights(ww)
+            c2 = c2 + 1
+
+    return model

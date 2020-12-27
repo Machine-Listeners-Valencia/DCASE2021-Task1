@@ -1,5 +1,5 @@
 from complexity_considerations.model_size import get_keras_model_size
-from complexity_considerations.convert_to_1bit import convert_to_1bit_conv
+from complexity_considerations.convert_to_1bit import convert_to_1bit_conv, set_to_1bit
 import config
 from models import construct_model
 from load_data import load_h5s
@@ -22,3 +22,6 @@ if __name__ == '__main__':
     print(model.summary())
     get_model_size(model)
     convert_to_1bit_conv(model, folder2store)
+    converted_model = set_to_1bit(model, folder2store)
+    #TODO: model size do not change
+    get_model_size(converted_model)
