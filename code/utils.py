@@ -18,7 +18,7 @@ def create_folder_time(home_path):
     if home_path is None:
         home_path = os.getenv('HOME')
     folder_path = home_path + config.outputs_path
-    dt = datetime.today().strftime('%Y-%m-%d-%H:%M')
+    dt = datetime.today().strftime('%Y-%m-%d-%H-%M')
     os.mkdir(folder_path + dt)
 
     return folder_path + dt + '/'
