@@ -115,7 +115,7 @@ def _tensor_shape(tensor):
     return getattr(tensor, '_shape_val')
 
 
-def squeeze_excite_block(input_tensor, ratio=16):
+def squeeze_excite_block(input_tensor, index, ratio=16, trident=None):
     """ Create a channel-wise squeeze-excite block
     Args:
         input_tensor: input Keras tensor
@@ -124,6 +124,9 @@ def squeeze_excite_block(input_tensor, ratio=16):
     References
     -   [Squeeze and Excitation Networks](https://arxiv.org/abs/1709.01507)
     """
+
+    trident_suffix = '' if trident is None else trident
+
     init = input_tensor
     channel_axis = 1 if K.image_data_format() == "channels_first" else -1
     filters = _tensor_shape(init)[channel_axis]
@@ -131,8 +134,10 @@ def squeeze_excite_block(input_tensor, ratio=16):
 
     se = GlobalAveragePooling2D()(init)
     se = Reshape(se_shape)(se)
-    se = Dense(filters // ratio, activation='relu', kernel_initializer='he_normal', use_bias=False)(se)
-    se = Dense(filters, activation='sigmoid', kernel_initializer='he_normal', use_bias=False)(se)
+    se = Dense(filters // ratio, activation='relu', kernel_initializer='he_normal', use_bias=False,
+               name='dense_ratio_' + str(index) + trident_suffix)(se)
+    se = Dense(filters, activation='sigmoid', kernel_initializer='he_normal', use_bias=False,
+               name='dense_sigmoid_' + str(index) + trident_suffix)(se)
 
     if K.image_data_format() == 'channels_first':
         se = Permute((3, 1, 2))(se)
@@ -141,7 +146,7 @@ def squeeze_excite_block(input_tensor, ratio=16):
     return x
 
 
-def spatial_squeeze_excite_block(input_tensor, binary_layer=False):
+def spatial_squeeze_excite_block(input_tensor, index, binary_layer=False, trident=None):
     """ Create a spatial squeeze-excite block
     Args:
         input_tensor: input Keras tensor
@@ -151,18 +156,22 @@ def spatial_squeeze_excite_block(input_tensor, binary_layer=False):
     :param binary_layer:
     """
 
+    trident_suffix = '' if trident is None else trident
+
     if binary_layer is True:
         se = BinaryConv2D(1, kernel_size=1, activation='sigmoid', use_bias=False,
-                          kernel_initializer='he_normal')(input_tensor)
+                          kernel_initializer='he_normal',
+                          name='conv1d_' + str(index) + trident_suffix)(input_tensor)
     else:
         se = Conv2D(1, (1, 1), activation='sigmoid', use_bias=False,
-                    kernel_initializer='he_normal')(input_tensor)
+                    kernel_initializer='he_normal',
+                    name='conv1d_' + str(index) + trident_suffix)(input_tensor)
 
     x = multiply([input_tensor, se])
     return x
 
 
-def channel_spatial_squeeze_excite(input_tensor, ratio=16, binary_layer=False):
+def channel_spatial_squeeze_excite(input_tensor, index, ratio=16, binary_layer=False, trident=None):
     """ Create a spatial squeeze-excite block
     Args:
         input_tensor: input Keras tensor
@@ -173,14 +182,14 @@ def channel_spatial_squeeze_excite(input_tensor, ratio=16, binary_layer=False):
     -   [Concurrent Spatial and Channel Squeeze & Excitation in Fully Convolutional Networks](https://arxiv.org/abs/1803.02579)
     """
 
-    cse = squeeze_excite_block(input_tensor, ratio)
-    sse = spatial_squeeze_excite_block(input_tensor, binary_layer=binary_layer)
+    cse = squeeze_excite_block(input_tensor, index, ratio, trident=trident)
+    sse = spatial_squeeze_excite_block(input_tensor, index, binary_layer=binary_layer, trident=trident)
 
     x = add([cse, sse])
     return x
 
 
-def conv_standard_post(inp, nfilters, ratio, index, pre_act=False, shortcut='conv', binary_layer=False):
+def conv_standard_post(inp, nfilters, ratio, index, pre_act=False, shortcut='conv', binary_layer=False, trident=None):
     """ Module presented in https://ieeexplore.ieee.org/abstract/document/9118879
     :param inp: input tensor
     :param nfilters: number of filter of convolutional layers
@@ -188,6 +197,7 @@ def conv_standard_post(inp, nfilters, ratio, index, pre_act=False, shortcut='con
     :param pre_act:
     :param shortcut:
     :param binary_layer:
+    :param trident:
     :return: tensor
     """
 
@@ -195,62 +205,69 @@ def conv_standard_post(inp, nfilters, ratio, index, pre_act=False, shortcut='con
     bn_name = 'bn_' + str(index)
     elu_name = 'elu_' + str(index)
     conv_name = 'conv_' + str(index)
+    trident_suffix = '' if trident is None else trident
 
     if pre_act:
 
-        x = BatchNormalization(name=bn_name + '_a')(inp)
-        x = ELU(name=elu_name)(x)
+        x = BatchNormalization(name=bn_name + '_a' + trident_suffix)(inp)
+        x = ELU(name=elu_name + trident_suffix)(x)
 
         if binary_layer is True:
-            x = BinaryConv2D(nfilters, kernel_size=3, use_bias=False, padding='same', name=conv_name + '_a')(x)
+            x = BinaryConv2D(nfilters, kernel_size=3, use_bias=False, padding='same',
+                             name=conv_name + '_a' + trident_suffix)(x)
         else:
-            x = Conv2D(nfilters, 3, padding='same', name=conv_name + '_a')(x)
+            x = Conv2D(nfilters, 3, padding='same', name=conv_name + '_a' + trident_suffix)(x)
 
-        x = BatchNormalization(name=bn_name + '_b')(x)
+        x = BatchNormalization(name=bn_name + '_b' + trident_suffix)(x)
 
         if binary_layer is True:
-            x = BinaryConv2D(nfilters, kernel_size=3, use_bias=False, padding='same', name=conv_name + '_b')(x)
+            x = BinaryConv2D(nfilters, kernel_size=3, use_bias=False, padding='same',
+                             name=conv_name + '_b' + trident_suffix)(x)
         else:
-            x = Conv2D(nfilters, 3, padding='same', name=conv_name + '_b')(x)
+            x = Conv2D(nfilters, 3, padding='same', name=conv_name + '_b' + trident_suffix)(x)
 
     else:
 
         if binary_layer is True:
-            x = BinaryConv2D(nfilters, kernel_size=3, use_bias=False, padding='same', name=conv_name + '_a')(inp)
+            x = BinaryConv2D(nfilters, kernel_size=3, use_bias=False, padding='same',
+                             name=conv_name + '_a' + trident_suffix)(inp)
         else:
-            x = Conv2D(nfilters, 3, padding='same', name=conv_name + '_a')(inp)
-        x = BatchNormalization(name=bn_name + '_a')(x)
-        x = ELU(name=elu_name)(x)
+            x = Conv2D(nfilters, 3, padding='same', name=conv_name + '_a' + trident_suffix)(inp)
+        x = BatchNormalization(name=bn_name + '_a' + trident_suffix)(x)
+        x = ELU(name=elu_name + trident_suffix)(x)
 
         if binary_layer is True:
-            x = BinaryConv2D(nfilters, kernel_size=3, use_bias=False, padding='same', name=conv_name + '_b')(x)
+            x = BinaryConv2D(nfilters, kernel_size=3, use_bias=False, padding='same',
+                             name=conv_name + '_b' + trident_suffix)(x)
         else:
-            x = Conv2D(nfilters, 3, padding='same', name=conv_name + '_b')(x)
-        x = BatchNormalization(name=bn_name + '_b')(x)
+            x = Conv2D(nfilters, 3, padding='same', name=conv_name + '_b' + trident_suffix)(x)
+        x = BatchNormalization(name=bn_name + '_b' + trident_suffix)(x)
 
     if shortcut == 'conv':
 
         if binary_layer is True:
-            x1 = BinaryConv2D(nfilters, kernel_size=1, use_bias=False, padding='same', name=conv_name + '_shortcut')(x1)
+            x1 = BinaryConv2D(nfilters, kernel_size=1, use_bias=False, padding='same',
+                              name=conv_name + '_shortcut' + trident_suffix)(x1)
         else:
-            x1 = Conv2D(nfilters, 1, padding='same', name=conv_name + '_shortcut')(x1)
-        x1 = BatchNormalization(name=bn_name + '_shortcut')(x1)
+            x1 = Conv2D(nfilters, 1, padding='same', name=conv_name + '_shortcut' + trident_suffix)(x1)
+        x1 = BatchNormalization(name=bn_name + '_shortcut' + trident_suffix)(x1)
     elif shortcut == 'global_avg' or shortcut == 'global_max':
-        x1 = Lambda(pad_matrix_global, arguments={'type': shortcut}, name='lambda_padding_' + str(index))(x1)
+        x1 = Lambda(pad_matrix_global, arguments={'type': shortcut},
+                    name='lambda_padding_' + str(index) + trident_suffix)(x1)
 
-    x = module_addition(x, x1, index, 'a')
+    x = module_addition(x, x1, index, 'a' + trident_suffix)
 
-    x = ELU(name=elu_name + '_after_addition')(x)
+    x = ELU(name=elu_name + '_after_addition' + trident_suffix)(x)
 
-    x = channel_spatial_squeeze_excite(x, ratio=ratio, binary_layer=binary_layer)
+    x = channel_spatial_squeeze_excite(x, index, ratio=ratio, binary_layer=binary_layer, trident=trident)
 
-    x = module_addition(x, x1, index, 'b')
+    x = module_addition(x, x1, index, 'b' + trident_suffix)
 
     return x
 
 
 def network_module(inp, nfilters, ratio, pool_size, dropout_rate, index, pre_act=False, shortcut='conv',
-                   binary_layer=False):
+                   binary_layer=False, trident=None):
     """ Implementation presented in https://ieeexplore.ieee.org/abstract/document/9118879
     :param inp: input tensor
     :param nfilters: number of filter of convolutional layers
@@ -261,12 +278,17 @@ def network_module(inp, nfilters, ratio, pool_size, dropout_rate, index, pre_act
     :param pre_act: pre_activation flag
     :param shortcut:
     :param binary_layer:
+    :param trident:
     :return:
     """
-    x = conv_standard_post(inp, nfilters, ratio, index, pre_act=pre_act, shortcut=shortcut, binary_layer=binary_layer)
 
-    x = MaxPooling2D(pool_size=pool_size, name='pool_' + str(index))(x)
-    x = Dropout(dropout_rate, name='dropout_' + str(index))(x)
+    trident_suffix = '' if trident is None else trident
+
+    x = conv_standard_post(inp, nfilters, ratio, index, pre_act=pre_act, shortcut=shortcut, binary_layer=binary_layer,
+                           trident=trident)
+
+    x = MaxPooling2D(pool_size=pool_size, name='pool_' + str(index) + trident_suffix)(x)
+    x = Dropout(dropout_rate, name='dropout_' + str(index) + trident_suffix)(x)
 
     return x
 

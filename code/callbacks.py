@@ -1,9 +1,9 @@
 import matplotlib.pyplot as plt
-from keras.callbacks import LearningRateScheduler
-from keras.callbacks import EarlyStopping
+from tensorflow.keras.callbacks import LearningRateScheduler, ReduceLROnPlateau
+from tensorflow.keras.callbacks import EarlyStopping
 import math
-import keras
-from keras import backend as K
+import tensorflow.keras
+from tensorflow.keras import backend as K
 
 __authors__ = "Javier Naranjo, Sergi Perez and Irene Martín"
 __copyright__ = "Machine Listeners Valencia"
@@ -72,19 +72,19 @@ def decay_rate_drop_based(lr_init, drop, epochs_drop):  # drop learning rate at 
 
 
 def lr_on_plateau(monitor, factor, patience, min_lr):
-    lr = keras.callbacks.ReduceLROnPlateau(monitor=monitor, factor=factor,
-                                           patience=patience, min_lr=min_lr)
+    lr = ReduceLROnPlateau(monitor=monitor, factor=factor,
+                           patience=patience, min_lr=min_lr)
     return lr
 
 
 def early_stopping(monitor, min_delta, mode, patience):
-    es = keras.callbacks.EarlyStopping(monitor=monitor, mode=mode, min_delta=min_delta,
-                                       patience=patience)
+    es = EarlyStopping(monitor=monitor, mode=mode, min_delta=min_delta,
+                       patience=patience)
     return es
 
 
 # print learning rate after epoch
-class GetLRAfterEpoch(keras.callbacks.Callback):
+class GetLRAfterEpoch(tensorflow.keras.callbacks.Callback):
     def on_epoch_begin(self, epoch, logs=None):
         lr = K.eval(self.model.optimizer.lr)
         print('LR: {:.6f}'.format(lr))
@@ -94,9 +94,5 @@ class DelayedEarlyStopping(EarlyStopping):
     def on_epoch_end(self, epoch, logs=None):
         if epoch >= 100:
             super().on_epoch_end(epoch, logs=logs)
-
-
-
-
 
 # EOF
