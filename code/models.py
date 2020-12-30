@@ -93,9 +93,9 @@ def res_conv_standard_post_csse_split_freqs(h, w, n_channels, n_classes,
 
         for i in range(0, len(nfilters)):
             x1 = network_module(x1, nfilters[i], ratio, pools_size[i], dropouts_rate[i], i,
-                                pre_act=pre_act, shortcut=shortcut, binary_layer=binary_layer)
+                                pre_act=pre_act, shortcut=shortcut, binary_layer=binary_layer, trident='_1')
             x2 = network_module(x2, nfilters[i], ratio, pools_size[i], dropouts_rate[i], i,
-                                pre_act=pre_act, shortcut=shortcut, binary_layer=binary_layer)
+                                pre_act=pre_act, shortcut=shortcut, binary_layer=binary_layer, trident='_2')
 
         x = tensorflow.keras.layers.concatenate([x1, x2], axis=1)
 
@@ -132,11 +132,11 @@ def res_conv_standard_post_csse_split_freqs(h, w, n_channels, n_classes,
 
         for i in range(0, len(nfilters)):
             x1 = network_module(x1, nfilters[i], ratio, pools_size[i], dropouts_rate[i], i,
-                                pre_act=pre_act, shortcut=shortcut, binary_layer=binary_layer)
+                                pre_act=pre_act, shortcut=shortcut, binary_layer=binary_layer, trident='_1')
             x2 = network_module(x2, nfilters[i], ratio, pools_size[i], dropouts_rate[i], i,
-                                pre_act=pre_act, shortcut=shortcut, binary_layer=binary_layer)
+                                pre_act=pre_act, shortcut=shortcut, binary_layer=binary_layer, trident='_2')
             x3 = network_module(x3, nfilters[i], ratio, pools_size[i], dropouts_rate[i], i,
-                                pre_act=pre_act, shortcut=shortcut, binary_layer=binary_layer)
+                                pre_act=pre_act, shortcut=shortcut, binary_layer=binary_layer, trident='_3')
 
         x = tensorflow.keras.layers.concatenate([x1, x2, x3], axis=1)
 

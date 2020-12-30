@@ -73,13 +73,13 @@ def decay_rate_drop_based(lr_init, drop, epochs_drop):  # drop learning rate at 
 
 def lr_on_plateau(monitor, factor, patience, min_lr):
     lr = ReduceLROnPlateau(monitor=monitor, factor=factor,
-                                           patience=patience, min_lr=min_lr)
+                           patience=patience, min_lr=min_lr)
     return lr
 
 
 def early_stopping(monitor, min_delta, mode, patience):
     es = EarlyStopping(monitor=monitor, mode=mode, min_delta=min_delta,
-                                       patience=patience)
+                       patience=patience)
     return es
 
 
@@ -94,9 +94,5 @@ class DelayedEarlyStopping(EarlyStopping):
     def on_epoch_end(self, epoch, logs=None):
         if epoch >= 100:
             super().on_epoch_end(epoch, logs=logs)
-
-
-
-
 
 # EOF
