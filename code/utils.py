@@ -1,7 +1,10 @@
 import os
 from datetime import datetime
 import config
-from tensorflow.keras.utils import plot_model
+if config.tf:
+    from tensorflow.keras.utils import plot_model
+else:
+    from keras.utils import plot_model
 
 __authors__ = "Javier Naranjo, Sergi Perez and Irene Martín"
 __copyright__ = "Machine Listeners Valencia"
