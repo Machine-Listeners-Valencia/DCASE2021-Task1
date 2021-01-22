@@ -1,15 +1,25 @@
 import matplotlib.pyplot as plt
-from tensorflow.keras.callbacks import LearningRateScheduler, ReduceLROnPlateau
-from tensorflow.keras.callbacks import EarlyStopping
-import math
-import tensorflow.keras
-from tensorflow.keras import backend as K
+import config
+
+if config.tf:
+    from tensorflow.keras.callbacks import LearningRateScheduler, ReduceLROnPlateau
+    from tensorflow.keras.callbacks import EarlyStopping
+    import math
+    from tensorflow.keras import backend as K
+    from tensorflow.keras.callbacks import Callback
+
+else:
+    from keras.callbacks import LearningRateScheduler, ReduceLROnPlateau
+    from keras.callbacks import EarlyStopping
+    import math
+    from keras.callbacks import Callback
+    from keras import backend as K
 
 __authors__ = "Javier Naranjo, Sergi Perez and Irene Martín"
 __copyright__ = "Machine Listeners Valencia"
 __credits__ = ["Machine Listeners Valencia"]
 __license__ = "MIT License"
-__version__ = "1.0.0"
+__version__ = "1.1.0"
 __maintainer__ = "Javier Naranjo"
 __email__ = "janal2@alumni.uv.es"
 __status__ = "Production"
@@ -84,7 +94,7 @@ def early_stopping(monitor, min_delta, mode, patience):
 
 
 # print learning rate after epoch
-class GetLRAfterEpoch(tensorflow.keras.callbacks.Callback):
+class GetLRAfterEpoch(Callback):
     def on_epoch_begin(self, epoch, logs=None):
         lr = K.eval(self.model.optimizer.lr)
         print('LR: {:.6f}'.format(lr))
