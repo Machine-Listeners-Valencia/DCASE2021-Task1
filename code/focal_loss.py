@@ -1,5 +1,9 @@
 import numpy as np
-from keras import backend as K
+import  config
+if config.tf:
+    from tensorflow.keras import backend as K
+else:
+    from keras import backend as K
 import tensorflow as tf
 
 __authors__ = "Javier Naranjo, Sergi Perez and Irene Martín"

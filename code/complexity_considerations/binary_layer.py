@@ -1,8 +1,14 @@
 # Author: Mark McDonnell, mark.mcdonnell@unisa.edu.au
 import numpy as np
+from .. import config
 
-from tensorflow.keras import backend as K
-from tensorflow.keras.layers import InputSpec, Conv2D
+if config.tf:
+    from tensorflow.keras import backend as K
+    from tensorflow.keras.layers import InputSpec, Conv2D
+else:
+    from keras import backend as K
+    from keras.layers import  InputSpec, Conv2D
+
 #from tensorflow.keras import initializers
 
 
