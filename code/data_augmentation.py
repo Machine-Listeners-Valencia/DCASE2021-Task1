@@ -12,6 +12,7 @@ __email__ = "janal2@alumni.uv.es"
 __status__ = "Production"
 __date__ = "2020"
 
+# TODO: both data generator
 
 def threadsafe_generator(f):
     """A decorator that takes a generator function and makes it thread-safe.
