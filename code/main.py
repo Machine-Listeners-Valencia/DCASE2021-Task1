@@ -19,8 +19,9 @@ from data_augmentation import MixupGenerator
 from focal_loss import categorical_focal_loss
 from load_data import load_h5s
 from models import construct_model
-from tests import (check_reshape_variable, check_model_depth, check_alpha_list, check_loss_type, check_data_generator,
-                   check_training_verbose, is_boolean, check_callbacks, check_shortcut_type)
+from tests_variables import (check_reshape_variable, check_model_depth, check_alpha_list, check_loss_type,
+                             check_data_generator,
+                             check_training_verbose, is_boolean, check_callbacks, check_shortcut_type)
 
 __authors__ = "Javier Naranjo, Sergi Perez and Irene Martín"
 __copyright__ = "Machine Listeners Valencia"
