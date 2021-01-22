@@ -15,7 +15,7 @@ import numpy as np
 
 # Owned
 import config
-from data_augmentation import MixupGenerator
+from data_augmentation import MixupGenerator, MixupGeneratorKeras
 from focal_loss import categorical_focal_loss
 from load_data import load_h5s
 from models import construct_model
@@ -33,7 +33,7 @@ __email__ = "janal2@alumni.uv.es"
 __status__ = "Dev"
 __date__ = "2020"
 
-# {code}
+# {src}
 
 # check config options
 check_reshape_variable(config.reshape_method)
@@ -77,7 +77,10 @@ else:
     epochs = config.epochs
 
 if config.data_augmentation == 'mixup':
-    train_datagen = MixupGenerator(x, y, batch_size=config.batch_size, alpha=config.mixup_alpha)()
+    if config.tf:
+        train_datagen = MixupGenerator(x, y, batch_size=config.batch_size, alpha=config.mixup_alpha)()
+    else:
+        train_datage = MixupGeneratorKeras(x, y, batch_size=config.batch_size, alpha=config.mixup_alpha)()
 
 callbacks = check_callbacks(config.home_path)
 

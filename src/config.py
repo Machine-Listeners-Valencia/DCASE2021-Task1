@@ -1,7 +1,7 @@
 # data paths
 home_path = None
 data_path: str = '/repos/DCASE2021-Task1/data/gammatone_64/'
-code_path: str = '/repos/DCASE2021-Task1/code/'
+code_path: str = '/repos/DCASE2021-Task1/src/'
 training_file: str = 'train_val_gammatone_mono_f1.h5'
 validation_file: str = 'train_val_gammatone_mono_f2.h5'
 tf: bool = False

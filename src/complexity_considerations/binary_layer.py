@@ -7,9 +7,10 @@ if config.tf:
     from tensorflow.keras.layers import InputSpec, Conv2D
 else:
     from keras import backend as K
-    from keras.layers import  InputSpec, Conv2D
+    from keras.layers import InputSpec, Conv2D
 
-#from tensorflow.keras import initializers
+
+# from tensorflow.keras import initializers
 
 
 class BinaryConv2D(Conv2D):
