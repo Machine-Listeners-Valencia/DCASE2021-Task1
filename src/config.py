@@ -21,7 +21,7 @@ reshape_method: str = 'global_avg'  # ['global_avg', 'global_max', 'flatten']
 dense_layer = None
 dropouts_rate_cl = None
 
-split_freqs: bool = True  # [True, False]
+split_freqs: bool = False  # [True, False]
 n_split_freqs = 3
 f_split_freqs = [64, 128]
 

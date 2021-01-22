@@ -80,7 +80,7 @@ if config.data_augmentation == 'mixup':
     if config.tf:
         train_datagen = MixupGenerator(x, y, batch_size=config.batch_size, alpha=config.mixup_alpha)()
     else:
-        train_datage = MixupGeneratorKeras(x, y, batch_size=config.batch_size, alpha=config.mixup_alpha)()
+        train_datagen = MixupGeneratorKeras(x, y, batch_size=config.batch_size, alpha=config.mixup_alpha)()
 
 callbacks = check_callbacks(config.home_path)
 

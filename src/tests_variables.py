@@ -1,6 +1,10 @@
-import tensorflow.keras
-
 import config
+if config.tf:
+    from tensorflow.keras.callbacks import ModelCheckpoint, CSVLoggerç
+else:
+    from keras.callbacks import ModelCheckpoint, CSVLogger
+
+
 from callbacks import lr_on_plateau, early_stopping, GetLRAfterEpoch
 from utils import create_folder_time, moving_config_file_to_folder
 
@@ -107,10 +111,10 @@ def check_callbacks(home_path):
 
             folder_path = create_folder_time(home_path)
             moving_config_file_to_folder(home_path, folder_path)
-            save_best = tensorflow.keras.callbacks.ModelCheckpoint(folder_path + config.best_model_name, save_best_only=True,
+            save_best = ModelCheckpoint(folder_path + config.best_model_name, save_best_only=True,
                                                         monitor='val_categorical_accuracy')
-            save = tensorflow.keras.callbacks.ModelCheckpoint(folder_path + config.last_model_name)
-            csv_log = tensorflow.keras.callbacks.CSVLogger(folder_path + config.log_name)
+            save = ModelCheckpoint(folder_path + config.last_model_name)
+            csv_log = CSVLogger(folder_path + config.log_name)
 
         else:
             save_best = []

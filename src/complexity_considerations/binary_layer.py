@@ -1,6 +1,6 @@
 # Author: Mark McDonnell, mark.mcdonnell@unisa.edu.au
 import numpy as np
-from .. import config
+import config
 
 if config.tf:
     from tensorflow.keras import backend as K
