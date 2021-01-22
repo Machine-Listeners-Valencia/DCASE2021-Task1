@@ -1,9 +1,10 @@
 # data paths
 home_path = None
-data_path: str = '/repos/DCASE2021-Task1/data/gammatone_256/'
-code_path: str = '/repos/DCASE2021-Task1/code/'
+data_path: str = '/repos/DCASE2021-Task1/data/gammatone_64/'
+code_path: str = '/repos/DCASE2021-Task1/src/'
 training_file: str = 'train_val_gammatone_mono_f1.h5'
 validation_file: str = 'train_val_gammatone_mono_f2.h5'
+tf: bool = False
 
 # model parameters
 verbose: bool = True  # [True, False]
@@ -20,7 +21,7 @@ reshape_method: str = 'global_avg'  # ['global_avg', 'global_max', 'flatten']
 dense_layer = None
 dropouts_rate_cl = None
 
-split_freqs: bool = True  # [True, False]
+split_freqs: bool = False  # [True, False]
 n_split_freqs = 3
 f_split_freqs = [64, 128]
 

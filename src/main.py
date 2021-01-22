@@ -15,12 +15,13 @@ import numpy as np
 
 # Owned
 import config
-from data_augmentation import MixupGenerator
+from data_augmentation import MixupGenerator, MixupGeneratorKeras
 from focal_loss import categorical_focal_loss
 from load_data import load_h5s
 from models import construct_model
-from tests import (check_reshape_variable, check_model_depth, check_alpha_list, check_loss_type, check_data_generator,
-                   check_training_verbose, is_boolean, check_callbacks, check_shortcut_type)
+from tests_variables import (check_reshape_variable, check_model_depth, check_alpha_list, check_loss_type,
+                             check_data_generator,
+                             check_training_verbose, is_boolean, check_callbacks, check_shortcut_type)
 
 __authors__ = "Javier Naranjo, Sergi Perez and Irene Martín"
 __copyright__ = "Machine Listeners Valencia"
@@ -32,7 +33,7 @@ __email__ = "janal2@alumni.uv.es"
 __status__ = "Dev"
 __date__ = "2020"
 
-# {code}
+# {src}
 
 # check config options
 check_reshape_variable(config.reshape_method)
@@ -76,7 +77,10 @@ else:
     epochs = config.epochs
 
 if config.data_augmentation == 'mixup':
-    train_datagen = MixupGenerator(x, y, batch_size=config.batch_size, alpha=config.mixup_alpha)()
+    if config.tf:
+        train_datagen = MixupGenerator(x, y, batch_size=config.batch_size, alpha=config.mixup_alpha)()
+    else:
+        train_datagen = MixupGeneratorKeras(x, y, batch_size=config.batch_size, alpha=config.mixup_alpha)()
 
 callbacks = check_callbacks(config.home_path)
 

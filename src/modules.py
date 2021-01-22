@@ -1,16 +1,24 @@
-from tensorflow.keras.layers import (GlobalAveragePooling2D, GlobalMaxPooling2D, Dense,
-                                     multiply, add, Permute, Conv2D,
-                                     Reshape, BatchNormalization, ELU, MaxPooling2D, Dropout, Lambda)
-import tensorflow.keras.backend as K
 import warnings
 from complexity_considerations.binary_layer import BinaryConv2D
+import config
+
+if config.tf:
+    from tensorflow.keras.layers import (GlobalAveragePooling2D, GlobalMaxPooling2D, Dense,
+                                         multiply, add, Permute, Conv2D,
+                                         Reshape, BatchNormalization, ELU, MaxPooling2D, Dropout, Lambda)
+    import tensorflow.keras.backend as K
+else:
+    from keras.layers import (GlobalAveragePooling2D, GlobalMaxPooling2D, Dense,
+                              multiply, add, Permute, Conv2D,
+                              Reshape, BatchNormalization, ELU, MaxPooling2D, Dropout, Lambda)
+    import keras.backend as K
 from tensorflow.keras.regularizers import l2
 
 __authors__ = "Javier Naranjo, Sergi Perez and Irene Martín"
 __copyright__ = "Machine Listeners Valencia"
 __credits__ = ["Machine Listeners Valencia"]
 __license__ = "MIT License"
-__version__ = "0.4.0"
+__version__ = "0.5.0"
 __maintainer__ = "Javier Naranjo"
 __email__ = "janal2@alumni.uv.es"
 __status__ = "Dev"
@@ -111,8 +119,11 @@ def _obtain_input_shape(input_shape,
 
 
 def _tensor_shape(tensor):
-    # return getattr(tensor, '_keras_shape')
-    return getattr(tensor, '_shape_val')
+
+    if config.tf:
+        return getattr(tensor, '_shape_val')
+    else:
+        return getattr(tensor, '_keras_shape')
 
 
 def squeeze_excite_block(input_tensor, index, ratio=16, trident=None):

@@ -1,6 +1,10 @@
 import os
 from datetime import datetime
 import config
+if config.tf:
+    from tensorflow.keras.utils import plot_model
+else:
+    from keras.utils import plot_model
 
 __authors__ = "Javier Naranjo, Sergi Perez and Irene Martín"
 __copyright__ = "Machine Listeners Valencia"
@@ -34,3 +38,8 @@ def moving_config_file_to_folder(home_path, folder_path):
         with open(folder_path + 'config.txt', 'w') as f1:
             for line in f:
                 f1.write(line)
+
+
+def plot_model_keras(model, directory, show_shapes=True):
+
+    plot_model
