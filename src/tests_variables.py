@@ -138,3 +138,10 @@ def check_shortcut_type(shortcut):
 
     if shortcut not in possible_options:
         raise Exception('Defined shortcut is not available. Possible options are: {}'.format(possible_options))
+
+
+def check_freq_and_split(max_freq, split_freqs):
+
+    if max_freq < split_freqs[-1]:
+        raise Exception('This split frequency is not possible. Frequency bins are {} and max split indicated is {}'
+                        .format(max_freq, split_freqs[-1]))

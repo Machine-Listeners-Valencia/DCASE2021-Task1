@@ -11,7 +11,7 @@ verbose: bool = True  # [True, False]
 n_filters: list = [32, 64, 128]
 pools_size: list = [(1, 10), (1, 5), (1, 5)]
 dropouts_rate: list = [0.3, 0.3, 0.3]
-binary_layer: bool = False
+binary_layer: bool = True
 
 ratio: int = 2
 pre_act: bool = False
@@ -21,7 +21,7 @@ reshape_method: str = 'global_avg'  # ['global_avg', 'global_max', 'flatten']
 dense_layer = None
 dropouts_rate_cl = None
 
-split_freqs: bool = False  # [True, False]
+split_freqs: bool = True  # [True, False]
 n_split_freqs = 3
 f_split_freqs = [64, 128]
 
