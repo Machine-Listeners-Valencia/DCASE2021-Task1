@@ -4,14 +4,14 @@ data_path: str = '/repos/DCASE2021-Task1/data/gammatone_64/'
 code_path: str = '/repos/DCASE2021-Task1/src/'
 training_file: str = 'train_val_gammatone_mono_f1.h5'
 validation_file: str = 'train_val_gammatone_mono_f2.h5'
-tf: bool = False
+tf: bool = True
 
 # model parameters
 verbose: bool = True  # [True, False]
 n_filters: list = [32, 64, 128]
 pools_size: list = [(1, 10), (1, 5), (1, 5)]
 dropouts_rate: list = [0.3, 0.3, 0.3]
-binary_layer: bool = True
+binary_layer: bool = False
 
 ratio: int = 2
 pre_act: bool = False
@@ -21,7 +21,7 @@ reshape_method: str = 'global_avg'  # ['global_avg', 'global_max', 'flatten']
 dense_layer = None
 dropouts_rate_cl = None
 
-split_freqs: bool = True  # [True, False]
+split_freqs: bool = False  # [True, False]
 n_split_freqs = 3
 f_split_freqs = [64, 128]
 

@@ -88,11 +88,11 @@ if config.data_augmentation == 'mixup':
 callbacks = check_callbacks(config.home_path)
 
 if config.data_augmentation is not None:
-    history = model.fit_generator(train_datagen,
-                                  validation_data=(val_x, val_y), epochs=epochs,
-                                  steps_per_epoch=np.ceil((x.shape[0] - 1) / config.batch_size),
-                                  callbacks=callbacks,
-                                  verbose=tr_verbose)
+    history = model.fit(train_datagen,
+                        validation_data=(val_x, val_y), epochs=epochs,
+                        steps_per_epoch=np.ceil((x.shape[0] - 1) / config.batch_size),
+                        callbacks=callbacks,
+                        verbose=tr_verbose)
 else:
     history = model.fit(x, y, validation_data=(val_x, val_y), batch_size=config.batch_size, epochs=epochs,
                         callbacks=callbacks,

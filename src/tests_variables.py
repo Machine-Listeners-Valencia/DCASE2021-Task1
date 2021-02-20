@@ -1,6 +1,6 @@
 import config
 if config.tf:
-    from tensorflow.keras.callbacks import ModelCheckpoint, CSVLoggerç
+    from tensorflow.keras.callbacks import ModelCheckpoint, CSVLogger
 else:
     from keras.callbacks import ModelCheckpoint, CSVLogger
 
