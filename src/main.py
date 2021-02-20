@@ -20,7 +20,7 @@ from focal_loss import categorical_focal_loss
 from load_data import load_h5s
 from models import construct_model
 from tests_variables import (check_reshape_variable, check_model_depth, check_alpha_list, check_loss_type,
-                             check_data_generator,
+                             check_data_generator, check_freq_and_split,
                              check_training_verbose, is_boolean, check_callbacks, check_shortcut_type)
 
 __authors__ = "Javier Naranjo, Sergi Perez and Irene Martín"
@@ -46,6 +46,9 @@ check_shortcut_type(config.shortcut)
 
 # loading training data
 x, y, val_x, val_y = load_h5s(config.home_path, config.data_path, config.validation_file, config.training_file)
+
+if config.split_freqs:
+    check_freq_and_split(x.shape[1], config.f_split_freqs)
 
 print('Training shape: {}'.format(x.shape))
 print('Validation shape: {}'.format(val_x.shape))
@@ -85,11 +88,11 @@ if config.data_augmentation == 'mixup':
 callbacks = check_callbacks(config.home_path)
 
 if config.data_augmentation is not None:
-    history = model.fit_generator(train_datagen,
-                                  validation_data=(val_x, val_y), epochs=epochs,
-                                  steps_per_epoch=np.ceil((x.shape[0] - 1) / config.batch_size),
-                                  callbacks=callbacks,
-                                  verbose=tr_verbose)
+    history = model.fit(train_datagen,
+                        validation_data=(val_x, val_y), epochs=epochs,
+                        steps_per_epoch=np.ceil((x.shape[0] - 1) / config.batch_size),
+                        callbacks=callbacks,
+                        verbose=tr_verbose)
 else:
     history = model.fit(x, y, validation_data=(val_x, val_y), batch_size=config.batch_size, epochs=epochs,
                         callbacks=callbacks,
