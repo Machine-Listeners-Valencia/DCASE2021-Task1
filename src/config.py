@@ -8,9 +8,9 @@ tf: bool = True
 
 # model parameters
 verbose: bool = True  # [True, False]
-n_filters: list = [32, 64, 128]
-pools_size: list = [(1, 10), (1, 5), (1, 5)]
-dropouts_rate: list = [0.3, 0.3, 0.3]
+n_filters: list = [32, 64]
+pools_size: list = [(1, 10), (1, 10)]
+dropouts_rate: list = [0.3, 0.3]
 binary_layer: bool = False
 
 ratio: int = 2
