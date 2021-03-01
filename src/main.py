@@ -90,7 +90,7 @@ callbacks = check_callbacks(config.home_path)
 if config.data_augmentation is not None:
     history = model.fit(train_datagen,
                         validation_data=(val_x, val_y), epochs=epochs,
-                        steps_per_epoch=np.ceil((x.shape[0] - 1) / config.batch_size),
+                        steps_per_epoch=int(x.shape[0]//config.batch_size),
                         callbacks=callbacks,
                         verbose=tr_verbose)
 else:
