@@ -1,6 +1,7 @@
 import os
 from datetime import datetime
 import config
+
 if config.tf:
     from tensorflow.keras.utils import plot_model
 else:
@@ -18,7 +19,6 @@ __date__ = "2020"
 
 
 def create_folder_time(home_path):
-
     if home_path is None:
         home_path = os.getenv('HOME')
     folder_path = home_path + config.outputs_path
@@ -29,9 +29,7 @@ def create_folder_time(home_path):
 
 
 def moving_config_file_to_folder(home_path, folder_path):
-
     if home_path is None:
-
         home_path = os.getenv('HOME')
 
     with open(home_path + config.code_path + 'config.py', 'r') as f:
@@ -41,5 +39,4 @@ def moving_config_file_to_folder(home_path, folder_path):
 
 
 def plot_model_keras(model, directory, show_shapes=True):
-
-    plot_model
+    return 0  # TODO: plot_model

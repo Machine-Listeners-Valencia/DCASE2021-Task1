@@ -22,6 +22,7 @@ from models import construct_model
 from tests_variables import (check_reshape_variable, check_model_depth, check_alpha_list, check_loss_type,
                              check_data_generator, check_freq_and_split,
                              check_training_verbose, is_boolean, check_callbacks, check_shortcut_type)
+from complexity_considerations import get_tflite, get_tlife_size
 
 __authors__ = "Javier Naranjo, Sergi Perez and Irene Martín"
 __copyright__ = "Machine Listeners Valencia"
@@ -85,15 +86,20 @@ if config.data_augmentation == 'mixup':
     else:
         train_datagen = MixupGeneratorKeras(x, y, batch_size=config.batch_size, alpha=config.mixup_alpha)()
 
-callbacks = check_callbacks(config.home_path)
+callbacks, best_model_path = check_callbacks(config.home_path)
 
 if config.data_augmentation is not None:
     history = model.fit(train_datagen,
                         validation_data=(val_x, val_y), epochs=epochs,
-                        steps_per_epoch=np.ceil((x.shape[0] - 1) / config.batch_size),
+                        steps_per_epoch=int(x.shape[0]//config.batch_size),
                         callbacks=callbacks,
                         verbose=tr_verbose)
 else:
     history = model.fit(x, y, validation_data=(val_x, val_y), batch_size=config.batch_size, epochs=epochs,
                         callbacks=callbacks,
                         verbose=tr_verbose)
+
+
+tflite_filename = get_tflite(best_model_path)
+
+get_tlife_size(tflite_filename)

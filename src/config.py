@@ -8,9 +8,9 @@ tf: bool = True
 
 # model parameters
 verbose: bool = True  # [True, False]
-n_filters: list = [32, 64, 128]
-pools_size: list = [(1, 10), (1, 5), (1, 5)]
-dropouts_rate: list = [0.3, 0.3, 0.3]
+n_filters: list = [40, 40]
+pools_size: list = [(1, 10), (1, 10)]
+dropouts_rate: list = [0.3, 0.3]
 binary_layer: bool = False
 
 ratio: int = 2
@@ -50,7 +50,7 @@ best_model_name: str = 'best.h5'
 last_model_name: str = 'last.h5'
 log_name: str = 'log.csv'
 
-# training hyperparamteres
+# training hyperparameters
 quick_test: bool = True  # [True, False]
 loss_type: str = 'focal_loss'  # ['focal_loss', 'categorical_loss']
 fl_alpha: float = 0.25  # needed if focal

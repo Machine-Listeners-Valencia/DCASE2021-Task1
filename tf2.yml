@@ -158,4 +158,25 @@ dependencies:
   - zipp=3.4.0=pyhd3eb1b0_0
   - zlib=1.2.11=h7b6447c_3
   - zstd=1.4.5=h6597ccf_2
-prefix: /home/javi/anaconda3/envs/tf2
+  - pip:
+    - appdirs==1.4.4
+    - audioread==2.1.9
+    - colorama==0.4.4
+    - dcase-util==0.2.16
+    - decorator==4.4.2
+    - dill==0.3.3
+    - future==0.18.2
+    - joblib==1.0.1
+    - librosa==0.8.0
+    - llvmlite==0.35.0
+    - numba==0.52.0
+    - packaging==20.9
+    - pooch==1.3.0
+    - pydot-ng==2.0.0
+    - python-magic==0.4.22
+    - resampy==0.2.2
+    - scikit-learn==0.24.1
+    - soundfile==0.10.3.post1
+    - threadpoolctl==2.1.0
+    - tqdm==4.58.0
+    - validators==0.18.2

@@ -1,5 +1,5 @@
 import warnings
-from complexity_considerations.binary_layer import BinaryConv2D
+from complexity_considerations_package.binary_layer import BinaryConv2D
 import config
 
 if config.tf:
