@@ -14,7 +14,7 @@ dropouts_rate: list = [0.3, 0.3]
 binary_layer: bool = False
 
 ratio: int = 2
-pre_act: bool = True
+pre_act: bool = False
 shortcut: str = 'conv'  # ['conv', 'global_avg', 'global_max', 'identity']
 
 reshape_method: str = 'global_avg'  # ['global_avg', 'global_max', 'flatten']
@@ -50,8 +50,8 @@ best_model_name: str = 'best.h5'
 last_model_name: str = 'last.h5'
 log_name: str = 'log.csv'
 
-# training hyperparamteres
-quick_test: bool = False  # [True, False]
+# training hyperparameters
+quick_test: bool = True  # [True, False]
 loss_type: str = 'focal_loss'  # ['focal_loss', 'categorical_loss']
 fl_alpha: float = 0.25  # needed if focal
 fl_gamma: int = 2  # needed if focal

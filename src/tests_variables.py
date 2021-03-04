@@ -124,7 +124,7 @@ def check_callbacks(home_path):
     callbacks = [es, get_lr, lr_onplt, save_best, save, csv_log]
     callbacks = list(filter(None, callbacks))
 
-    return callbacks
+    return callbacks, folder_path + config.best_model_name
 
 
 def check_split_freqs(split_freqs, n_split_freqs, f_split_freqs):

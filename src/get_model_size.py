@@ -1,5 +1,5 @@
-from complexity_considerations.model_size import get_keras_model_size
-from complexity_considerations.convert_to_1bit import convert_to_1bit_conv, set_to_1bit
+from complexity_considerations import get_keras_model_size
+from complexity_considerations_package.convert_to_1bit import convert_to_1bit_conv, set_to_1bit
 import config
 from models import construct_model
 from load_data import load_h5s

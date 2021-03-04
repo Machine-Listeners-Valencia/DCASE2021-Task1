@@ -1,5 +1,11 @@
 import dcase_util
 import numpy
+import dill
+import pathlib
+from tensorflow.keras.models import load_model
+import os
+import tensorflow as tf
+from focal_loss import categorical_focal_loss
 
 
 def get_keras_model_size(keras_model, verbose=True, ui=None, excluded_layers=None):
@@ -247,3 +253,44 @@ def get_lite_model_size(interpreter, verbose=True, ui=None):
             }
         }
     }
+
+
+def get_tflite(path2model):
+    model = load_model(path2model, custom_objects={'categorical_focal_loss_fixed': dill.loads(
+        dill.dumps(categorical_focal_loss(gamma=2., alpha=[[.25, .25, .25, .25, .25, .25, .25, .25, .25, 0.25]])))})
+
+    filename, file_extension = os.path.splitext(path2model)
+
+    model2convert = filename + '_tflite.h5'
+    model.save(model2convert, include_optimizer=False)
+
+    model_for_tflite = load_model(model2convert)
+    # converter = tf.compat.v1.lite.TFLiteConverter.from_keras_model_file(model2convert)
+    converter = tf.lite.TFLiteConverter.from_keras_model(model_for_tflite)
+    converter.optimizations = [tf.lite.Optimize.DEFAULT]
+    converter.target_spec.supported_types = [tf.float16]
+    # print(type(converter))
+    tfm = converter.convert()
+
+    tfmodel_file = pathlib.Path(filename + '.tflite')
+    tfmodel_file.write_bytes(tfm)
+
+    return filename + '.tflite'
+
+
+def get_tlife_size(tflite_model):
+
+    interpreter = tf.lite.Interpreter(model_path=tflite_model)
+    interpreter.allocate_tensors()
+
+    input_details = interpreter.get_input_details()
+    output_details = interpreter.get_output_details()
+
+    input_shape = input_details[0]['shape']
+    input_data = numpy.array(numpy.zeros(input_shape), dtype=numpy.float32)
+    interpreter.set_tensor(input_details[0]['index'], input_data)
+
+    interpreter.invoke()
+    output_data = interpreter.get_tensor(output_details[0]['index'])
+
+    get_lite_model_size(interpreter, verbose=True)
