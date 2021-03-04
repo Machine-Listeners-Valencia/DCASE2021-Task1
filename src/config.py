@@ -8,13 +8,13 @@ tf: bool = True
 
 # model parameters
 verbose: bool = True  # [True, False]
-n_filters: list = [32, 64]
+n_filters: list = [40, 40]
 pools_size: list = [(1, 10), (1, 10)]
 dropouts_rate: list = [0.3, 0.3]
 binary_layer: bool = False
 
 ratio: int = 2
-pre_act: bool = False
+pre_act: bool = True
 shortcut: str = 'conv'  # ['conv', 'global_avg', 'global_max', 'identity']
 
 reshape_method: str = 'global_avg'  # ['global_avg', 'global_max', 'flatten']
@@ -51,7 +51,7 @@ last_model_name: str = 'last.h5'
 log_name: str = 'log.csv'
 
 # training hyperparamteres
-quick_test: bool = True  # [True, False]
+quick_test: bool = False  # [True, False]
 loss_type: str = 'focal_loss'  # ['focal_loss', 'categorical_loss']
 fl_alpha: float = 0.25  # needed if focal
 fl_gamma: int = 2  # needed if focal
