@@ -121,7 +121,8 @@ def _obtain_input_shape(input_shape,
 def _tensor_shape(tensor):
 
     if config.tf:
-        return getattr(tensor, '_shape_val')
+        #return getattr(tensor, 'get_shape()')
+        return tensor.get_shape()
     else:
         return getattr(tensor, '_keras_shape')
 
