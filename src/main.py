@@ -67,12 +67,18 @@ if config.loss_type == 'focal_loss':
         check_alpha_list(alpha_list, y.shape[1])
 
 # compiling model
+if config.gradient_centralized:
+    import gctf
+    opt = gctf.optimizers.adam()
+else:
+    opt = 'adam'
+
 if config.loss_type == 'focal_loss':
     model.compile(loss=[categorical_focal_loss(alpha=alpha_list, gamma=config.fl_gamma)],
-                  metrics=['categorical_accuracy'], optimizer='adam')
+                  metrics=['categorical_accuracy'], optimizer=opt)
 
 elif config.loss_type == 'categorical_loss':
-    model.compile(loss='categorical_crossentropy', metrics=['categorical_accuracy'], optimizer='adam')
+    model.compile(loss='categorical_crossentropy', metrics=['categorical_accuracy'], optimizer=opt)
 
 # number of epochs
 if config.quick_test:
