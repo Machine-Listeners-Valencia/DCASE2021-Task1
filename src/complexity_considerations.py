@@ -279,7 +279,6 @@ def get_tflite(path2model):
 
 
 def get_tlife_size(tflite_model):
-
     interpreter = tf.lite.Interpreter(model_path=tflite_model)
     interpreter.allocate_tensors()
 
@@ -294,3 +293,15 @@ def get_tlife_size(tflite_model):
     output_data = interpreter.get_tensor(output_details[0]['index'])
 
     get_lite_model_size(interpreter, verbose=True)
+
+
+if __name__ == '__main__':
+    tf_lite_path = '../outputs/2021-03-02-20-53-best/best.tflite'
+
+    keras_model = load_model('../outputs/2021-03-02-20-53-best/best.h5', custom_objects={'categorical_focal_loss_fixed': dill.loads(
+        dill.dumps(categorical_focal_loss(gamma=2., alpha=[[.25, .25, .25, .25, .25, .25, .25, .25, .25, 0.25]])))})
+    print(keras_model.summary())
+
+    get_keras_model_size(keras_model)
+
+    get_tlife_size(tf_lite_path)

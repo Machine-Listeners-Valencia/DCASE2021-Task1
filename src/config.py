@@ -51,7 +51,7 @@ last_model_name: str = 'last.h5'
 log_name: str = 'log.csv'
 
 # training hyperparameters
-quick_test: bool = True  # [True, False]
+quick_test: bool = False  # [True, False]
 gradient_centralized: bool = True  # [True, False]
 loss_type: str = 'focal_loss'  # ['focal_loss', 'categorical_loss']
 fl_alpha: float = 0.25  # needed if focal
